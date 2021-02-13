@@ -1853,4 +1853,7 @@ class Core {
       }
     }
   }
+
+  // exports
+  export { CCCVerticalBarChart, CCCHorizontalBarChart, CCCPieChart, CCCLineChart, CCCCombinationChart}
   

@@ -1,0 +1,31 @@
+{
+  "name": "d3-sugar",
+  "version": "1.0.0",
+  "description": "package manager for d3 plugin",
+  "main": "d3.sugar.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "gulp -- min"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rguttersohn/d3-sugar.git"
+  },
+  "author": "Robert Guttersohn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rguttersohn/d3-sugar/issues"
+  },
+  "homepage": "https://github.com/rguttersohn/d3-sugar#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.12.13",
+    "@babel/plugin-transform-classes": "^7.12.13",
+    "gulp": "^4.0.2",
+    "gulp-strip-debug": "^3.0.0",
+    "gulp-terser": "^2.0.1",
+    "gulp-uglify": "^3.0.2"
+  }
+}
