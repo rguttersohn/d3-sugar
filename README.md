@@ -14,7 +14,9 @@ The first step in rendering a CCCDataViz chart is to decide where in your HTML y
  
 In the body of your page, add a <div> element and provide it a unique ID. For example: 
 
+```
 <div id="bar-chart"></div>
+```
 
 In the above example, we give a <div> element the id of "bar-chart". The id can be called anything, but keep in mind you'll have to remember the id name when declaring the graph. Also, if you have multiple graphs on the same page, you'll want the ID names to be practical and easy to follow. 
 
