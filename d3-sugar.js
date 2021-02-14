@@ -1221,7 +1221,7 @@ class CCCCombinationChart extends Core {
           return color;
         }
       })
-      .attr("height", () => { return this.height - this.scaleLinearVertical(0); }) // always equal to 0
+      .attr("height", () => { return 0 }) // always equal to 0
       .attr("y", () => { return this.scaleLinearVertical(0); })
       .transition()
       .duration(300)
