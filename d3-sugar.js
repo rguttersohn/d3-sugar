@@ -903,8 +903,9 @@ class CCCLineChart extends Core {
   }
 
   //methods
-  createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
-    this.indicator = indicator;
+  createChart(w, h, { indicator, stat } = {}) {
+    !indicator ? indicator = this.indicator : this.indicator = indicator;
+    !stat ? stat = this.stat : this.stat = stat;
     this.stat = stat;
     this.width = w;
     this.wrapperWidth = w
@@ -1001,12 +1002,11 @@ class CCCLineChart extends Core {
     return this;
   }
 
-  addLine(s, color = "black") {
-    this.stat = s;
+  addLine(color = "black") {
     this.lineIteration++;
     let obj = {};
     obj.color = color;
-    obj.indicator = s;
+    obj.indicator = this.indicator;
     this.legend.push(obj);
     d3.select(`${this.selector} svg`)
       .append("g")
@@ -1146,11 +1146,11 @@ class CCCLineChart extends Core {
       return this;
     }
   }
-}
+} 
 
 class CCCCombinationChart extends Core {
-  constructor(data, selector, domain) {
-    super(selector, domain);
+  constructor(data, selector) {
+    super(selector);
     this.data = data;
     this.indicator = "";
     this.stat = "";
@@ -1162,7 +1162,6 @@ class CCCCombinationChart extends Core {
   //getters
 
   //local flatten method for this class overrides the super flatten method to account for the potential use of different scales
-
   get flatten() {
     this.domain.pop()
     return this.data.forEach((obj) => {
@@ -1171,7 +1170,6 @@ class CCCCombinationChart extends Core {
   }
 
   //methods
-
   createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
     this.indicator = indicator;
     this.stat = stat;
@@ -1190,12 +1188,12 @@ class CCCCombinationChart extends Core {
   }
 
   addBars(
-    stat,
     color,
     {
       data,
       width,
       indicator,
+      stat,
       padding = 0.2,
       opacity = 1,
       translateX = 0,
@@ -1282,9 +1280,8 @@ class CCCCombinationChart extends Core {
   }
 
   addLine(
-    stat,
     color = "black",
-    { data, width, indicator, translateX = 0, translateY = 0 } = {}
+    { data, width, indicator, stat, translateX = 0, translateY = 0 } = {}
   ) {
     this.lineIteration++;
     !data ? (data = this.data) : (this.data = data);
@@ -1326,12 +1323,12 @@ class CCCCombinationChart extends Core {
   }
 
   addPlotPoints(
-    stat,
     color,
     {
       data,
       width,
       indicator,
+      stat,
       padding = 0.2,
       opacity = 1,
       translateX = 0,
