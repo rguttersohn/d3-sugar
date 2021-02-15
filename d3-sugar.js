@@ -49,7 +49,7 @@ class Core {
       .select(`${this.selector} svg .x-axis .domain`)
       .style("visibility", "hidden");
   }
-  //scales
+  //creates an array of all numbers in the dataset and pushes them to the domain array
   get flatten() {
     return this.data.forEach((obj) => {
       Object.values(obj).map((el) => {
@@ -60,14 +60,17 @@ class Core {
     });
   }
 
+  //finds max of all numbers in the domain array
   get max() {
     return Math.max(...this.domain);
   }
 
+  //finds min of all numbers in the domain array
   get min() {
     return Math.min(...this.domain);
   }
 
+  //function for creating line charts
   get lineFunc() {
     return d3
       .line()
@@ -122,6 +125,7 @@ class Core {
   }
 
   //methods
+  //adds a header to the visual using html
   addHeader(headerText) {
     this.root.insert("h3", "svg");
     d3.select(`${this.selector} h3`)
@@ -135,6 +139,8 @@ class Core {
     return this;
   }
 
+
+  //adds legend. Renders legend based on properties in the legend object
   addLegend({ legendLabel } = {}) {
     this.root
       .append("div")
@@ -1153,7 +1159,19 @@ class CCCCombinationChart extends Core {
     this.labelIteration = 0;
   }
 
+  //getters
+
+  //local flatten method for this class overrides the super flatten method to account for the potential use of different scales
+
+  get flatten() {
+    this.domain.pop()
+    return this.data.forEach((obj) => {
+     this.domain.push(obj[`${this.stat}`])
+    });
+  }
+
   //methods
+
   createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
     this.indicator = indicator;
     this.stat = stat;

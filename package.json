@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "gulp -- min"
+    "build": "gulp -- dev"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,6 @@
     "gulp-rename": "^2.0.0",
     "gulp-strip-debug": "^3.0.0",
     "gulp-terser": "^2.0.1",
-    "gulp-uglify": "^3.0.2"
+    "npm-watch": "^0.7.0"
   }
 }
