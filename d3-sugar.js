@@ -192,17 +192,17 @@ class CCCVerticalBarChart extends Core {
   }
 
   //methods
-  createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
-    this.indicator = indicator;
-    this.stat = stat;
+  createChart({width = 300, height = 400, indicator, stat } = {}) {
+    !indicator ? indicator = this.indicator : this.indicator = indicator;
+    !stat ? stat = this.stat : this.stat = stat
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${this.indicator}`];
     }
-    this.width = w;
-    this.wrapperWidth = w;
-    this.height = h;
-    if (w && h) {
+    this.width = width;
+    this.wrapperWidth = width;
+    this.height = height;
+    if (width && height) {
       this.flatten;
       this.setParentDimension;
       this.root
@@ -464,17 +464,17 @@ class CCCHorizontalBarChart extends Core {
   }
 
   //methods
-  createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
+  createChart({ width = 400, height = 300, indicator = "indicator", stat = "stat" } = {}) {
     this.indicator = indicator;
     this.stat = stat;
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${this.indicator}`];
     }
-    this.width = w;
-    this.wrapperWidth = w
-    this.height = h;
-    if (w && h) {
+    this.width = width;
+    this.wrapperWidth = width
+    this.height = height;
+    if (width && height) {
       this.flatten;
       this.setParentDimension;
       this.root
@@ -739,7 +739,7 @@ class CCCPieChart extends Core {
 
   //getters
   get pie() {
-    return d3.pie().value((d) => d.stat)(this.data);
+    return d3.pie().value((d) => d[`${this.stat}`])(this.data);
   }
 
   //methods
@@ -752,17 +752,17 @@ class CCCPieChart extends Core {
       .padRadius(50);
   }
 
-  createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
-    this.indicator = indicator;
-    this.stat = stat;
+  createChart({width = 300, height = 300, indicator, stat } = {}) {
+    !indicator ? indicator = this.indicator : this.indicator = indicator;
+    !stat ? stat = this.stat : this.stat = stat;
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
-      this.legend[i].indicator = this.data[i][`${this.indicator}`];
+      this.legend[i].indicator = this.data[i][`${indicator}`];
     }
-    this.height = h;
-    this.width = w;
-    this.wrapperWidth = w;
-    if (w && h) {
+    this.height = height;
+    this.width = width;
+    this.wrapperWidth = width;
+    if (width && height) {
       this.flatten;
       this.setParentDimension;
       this.root
@@ -903,14 +903,14 @@ class CCCLineChart extends Core {
   }
 
   //methods
-  createChart(w, h, { indicator, stat } = {}) {
+  createChart({ width = 400, height = 300, indicator, stat } = {}) {
     !indicator ? indicator = this.indicator : this.indicator = indicator;
     !stat ? stat = this.stat : this.stat = stat;
     this.stat = stat;
-    this.width = w;
-    this.wrapperWidth = w
-    this.height = h;
-    if (w && h) {
+    this.width = width;
+    this.wrapperWidth = width
+    this.height = height;
+    if (width && height) {
       this.flatten;
       this.setParentDimension;
       this.root
@@ -1170,13 +1170,13 @@ class CCCCombinationChart extends Core {
   }
 
   //methods
-  createChart(w, h, { indicator = "indicator", stat = "stat" } = {}) {
+  createChart({ width = 300, height=300, indicator = "indicator", stat = "stat" } = {}) {
     this.indicator = indicator;
     this.stat = stat;
-    this.width = w;
-    this.wrapperWidth = w;
-    this.height = h;
-    if (w && h) {
+    this.width = width;
+    this.wrapperWidth = width;
+    this.height = height;
+    if (width && height) {
       this.flatten;
       this.setParentDimension;
       this.root
