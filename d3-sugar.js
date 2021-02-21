@@ -1,7 +1,7 @@
 class Core {
-  constructor(data, selector) {
+  constructor(selector) {
     this.selector = selector;
-    this.data = data;
+    this.data = "";
     this.indicator = "";
     this.stat = "";
     this.height = 0;
@@ -73,7 +73,7 @@ class Core {
     return Math.min(...this.domain);
   }
 
-  //function for creating line charts
+  //function for creating line in line charts
   get lineFunc() {
     return d3
       .line()
@@ -88,6 +88,8 @@ class Core {
       })
       .curve(d3.curveLinear);
   }
+
+  // scales
 
   get scaleBandHorizontal() {
     return d3
@@ -143,7 +145,7 @@ class Core {
   }
 
 
-  //adds legend. Renders legend based on properties in the legend object
+  //adds legend. Renders legend based on objects in the legend array
   addLegend({ legendLabel } = {}) {
     this.root
       .append("div")
@@ -187,14 +189,16 @@ class Core {
 }
 
 class CCCVerticalBarChart extends Core {
-  constructor(data, selector) {
-    super(data, selector);
+  constructor(selector) {
+    super(selector);
   }
 
   //methods
-  createChart({width = 300, height = 400, indicator, stat } = {}) {
+  createChart({width = 300, height = 400, data, indicator, stat } = {}) {
+    !data ? data = this.data : this.data = data;
     !indicator ? indicator = this.indicator : this.indicator = indicator;
     !stat ? stat = this.stat : this.stat = stat
+    
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${this.indicator}`];
@@ -456,16 +460,15 @@ class CCCVerticalBarChart extends Core {
 }
 
 class CCCHorizontalBarChart extends Core {
-  constructor(data, selector) {
-    super(data, selector);
-    this.indicator = "";
-    this.stat = "";
+  constructor(selector) {
+    super(selector);
   }
 
   //methods
-  createChart({ width = 400, height = 300, indicator = "indicator", stat = "stat" } = {}) {
-    this.indicator = indicator;
-    this.stat = stat;
+  createChart({ width = 400, height = 300, data, indicator, stat} = {}) {
+    !data ? data = this.indicator : this.data = data
+    !indicator ? indicator = this.indicator : this.indicator = indicator ;
+    !stat ? stat = this.stat : this.stat = stat;
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${this.indicator}`];
@@ -729,8 +732,8 @@ class CCCHorizontalBarChart extends Core {
 }
 
 class CCCPieChart extends Core {
-  constructor(data, selector, colors) {
-    super(data, selector, colors);
+  constructor(selector, colors) {
+    super(selector, colors);
   }
 
   //getters
@@ -748,7 +751,8 @@ class CCCPieChart extends Core {
       .padRadius(50);
   }
 
-  createChart({width = 300, height = 300, indicator, stat } = {}) {
+  createChart({width = 300, height = 300, data, indicator, stat } = {}) {
+    !data ? data = this.data : this.data = data
     !indicator ? indicator = this.indicator : this.indicator = indicator;
     !stat ? stat = this.stat : this.stat = stat;
     for (let i = 0; i < this.data.length; i++) {
@@ -888,15 +892,16 @@ class CCCPieChart extends Core {
 }
 
 class CCCLineChart extends Core {
-  constructor(data, selector) {
-    super(data, selector);
+  constructor(selector) {
+    super(selector);
     this.lineIteration = 0;
     this.dotIteration = 0;
     this.labelIteration = 0;
   }
 
   //methods
-  createChart({ width = 400, height = 300, indicator, stat } = {}) {
+  createChart({ width = 400, height = 300, data, indicator, stat } = {}) {
+    !data ? data = this.data : this.data = data;
     !indicator ? indicator = this.indicator : this.indicator = indicator;
     !stat ? stat = this.stat : this.stat = stat;
     this.stat = stat;
@@ -1142,8 +1147,8 @@ class CCCLineChart extends Core {
 } 
 
 class CCCCombinationChart extends Core {
-  constructor(data, selector) {
-    super(data, selector);
+  constructor(selector) {
+    super(selector);
     this.lineIteration = 0;
     this.dotIteration = 0;
     this.labelIteration = 0;
@@ -1160,9 +1165,10 @@ class CCCCombinationChart extends Core {
   }
 
   //methods
-  createChart({ width = 300, height=300, indicator = "indicator", stat = "stat" } = {}) {
-    this.indicator = indicator;
-    this.stat = stat;
+  createChart({ width = 300, height=300, data, indicator, stat } = {}) {
+    !data ? data = this.data : this.data = data
+    !indicator ? indicator = this.indicator : this.indicator = indicator;
+    !stat ? stat = this.stat : this.stat = stat;
     this.width = width;
     this.wrapperWidth = width;
     this.height = height;
@@ -1180,10 +1186,7 @@ class CCCCombinationChart extends Core {
   addBars(
     color,
     {
-      data,
       width,
-      indicator,
-      stat,
       padding = 0.2,
       opacity = 1,
       translateX = 0,
@@ -1192,15 +1195,11 @@ class CCCCombinationChart extends Core {
     } = {}
   ) {
     this.padding = padding;
-    !data ? (data = this.data) : (this.data = data);
     !width ? (width = this.width) : (this.width = width);
-    !stat ? (stat = this.stat) : (this.stat = stat);
-    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
-
     if (color) {
       let obj = {};
       obj.color = color;
-      obj.indicator = stat;
+      obj.indicator = this.stat;
       this.legend.push(obj);
     }
 
@@ -1271,16 +1270,13 @@ class CCCCombinationChart extends Core {
 
   addLine(
     color = "black",
-    { data, width, indicator, stat, translateX = 0, translateY = 0 } = {}
+    { width, translateX = 0, translateY = 0 } = {}
   ) {
     this.lineIteration++;
-    !data ? (data = this.data) : (this.data = data);
     !width ? (width = this.width) : (this.width = width);
-    !stat ? (stat = this.stat) : (this.stat = stat);
-    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
     let obj = {};
     obj.color = color;
-    obj.indicator = stat;
+    obj.indicator = this.stat;
     this.legend.push(obj);
     d3.select(`${this.selector} svg`)
       .append("g")
@@ -1315,10 +1311,7 @@ class CCCCombinationChart extends Core {
   addPlotPoints(
     color,
     {
-      data,
       width,
-      indicator,
-      stat,
       padding = 0.2,
       opacity = 1,
       translateX = 0,
@@ -1330,15 +1323,11 @@ class CCCCombinationChart extends Core {
     } = {}
   ) {
     this.padding = padding;
-    !data ? (data = this.data) : (this.data = data);
     !width ? (width = this.width) : (this.width = width);
-    !stat ? (stat = this.stat) : (this.stat = stat);
-    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
-
     if (color) {
       let obj = {};
       obj.color = color;
-      obj.indicator = stat;
+      obj.indicator = this.stat;
       this.legend.push(obj);
     }
 
@@ -1442,14 +1431,11 @@ class CCCCombinationChart extends Core {
 
   addDots(
     color = "black",
-    { data, stat, indicator, r = 5, width, translateX = 0, translateY = 0 } = {}
+    {r = 5, width, translateX = 0, translateY = 0 } = {}
   ) {
     this.dotIteration++;
     if (this.width !== 0 || this.height !== 0) {
-      !data ? (data = this.data) : (this.data = data);
       !width ? (width = this.width) : (this.width = width);
-      !stat ? (stat = this.stat) : (this.stat = stat);
-      !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
       d3.select(`${this.selector} svg`)
         .append("g")
         .attr("class", `dots-${this.dotIteration}`)
@@ -1513,7 +1499,6 @@ class CCCCombinationChart extends Core {
   }
 
   addYAxis({
-    data,
     formatPunctuation = "commaSeparate",
     ticks = 10,
     tickSizeOuter = 0,
@@ -1525,8 +1510,7 @@ class CCCCombinationChart extends Core {
     orient = "left",
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      !data ? (data = this.data) : (this.data = data);
-      this.domain = [];
+     this.domain = [];
       this.flatten;
       if (orient === "left") {
         d3.select(this.selector + " svg")
