@@ -909,9 +909,6 @@ class CCCPieChart extends Core {
 class CCCLineChart extends Core {
   constructor(selector) {
     super(selector);
-    this.lineIteration = 0;
-    this.dotIteration = 0;
-    this.labelIteration = 0;
   }
 
   //methods
@@ -1015,14 +1012,13 @@ class CCCLineChart extends Core {
   }
 
   addLine(color = "black") {
-    this.lineIteration++;
     let obj = {};
     obj.color = color;
     obj.indicator = this.indicator;
     this.legend.push(obj);
-    this.parts[`line_${this.lineIteration}`] = d3.select(`${this.selector} svg`)
+    this.parts[`line_${this.indicator}`] = d3.select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `line-${this.lineIteration}`)
+      .attr("class", `line-${this.indicator}`)
       .append("path")
       .attr("d", this.lineFunc(this.data))
       .attr("transform", `translate(${this.margin},${this.margin})`)
@@ -1031,7 +1027,7 @@ class CCCLineChart extends Core {
       .attr("fill", "none");
 
     let line = d3.select(
-      `${this.selector} svg .line-${this.lineIteration} path`
+      `${this.selector} svg .line-${this.indicator} path`
     );
     let length = line._groups[0][0].getTotalLength();
     line
@@ -1133,12 +1129,11 @@ class CCCLineChart extends Core {
   }
 
   addDots(color = "black", { stat, r = 5 } = {}) {
-    this.dotIteration++;
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
-    this.parts[`dots_${this.dotIteration}`] = d3.select(`${this.selector} svg`)
+    this.parts[`dots_${this.indicator}`] = d3.select(`${this.selector} svg`)
         .append("g")
-        .attr("class", `dots-${this.dotIteration}`)
+        .attr("class", `dots-${this.indicator}`)
         .selectAll("circle")
         .data(this.data)
         .enter()
@@ -1163,9 +1158,6 @@ class CCCLineChart extends Core {
 class CCCCombinationChart extends Core {
   constructor(selector) {
     super(selector);
-    this.lineIteration = 0;
-    this.dotIteration = 0;
-    this.labelIteration = 0;
   }
 
   //getters
@@ -1189,9 +1181,8 @@ class CCCCombinationChart extends Core {
     if (width && height) {
       this.flatten;
       this.setParentDimension;
-      this.root
-        .append("svg")
-        .attr("width", this.width + this.margin * 2)
+    this.parts.svg = this.root.append("svg");
+    this.parts.svg.attr("width", this.width + this.margin * 2)
         .attr("height", this.height + this.margin);
       return this;
     }
@@ -1217,7 +1208,7 @@ class CCCCombinationChart extends Core {
       this.legend.push(obj);
     }
 
-    d3.select(`${this.selector} svg`)
+   this.parts[`bars_${this.indicator}`] = d3.select(`${this.selector} svg`)
       .append("g")
       .attr("class", "bars")
       .attr("width", this.width)
@@ -1287,15 +1278,14 @@ class CCCCombinationChart extends Core {
   }
 
   addLine(color = "black", { width, translateX = 0, translateY = 0 } = {}) {
-    this.lineIteration++;
     !width ? (width = this.width) : (this.width = width);
     let obj = {};
     obj.color = color;
     obj.indicator = this.stat;
     this.legend.push(obj);
-    d3.select(`${this.selector} svg`)
+   this.parts[`line_${this.indicator}`] = d3.select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `line-${this.lineIteration}`)
+      .attr("class", `line-${this.indicator}`)
       .attr("width", this.width)
       .append("path")
       .attr("d", this.lineFunc(this.data))
@@ -1313,7 +1303,7 @@ class CCCCombinationChart extends Core {
       );
 
     let line = d3.select(
-      `${this.selector} svg .line-${this.lineIteration} path`
+      `${this.selector} svg .line-${this.indicator} path`
     );
     let length = line._groups[0][0].getTotalLength();
     line
@@ -1349,7 +1339,7 @@ class CCCCombinationChart extends Core {
       this.legend.push(obj);
     }
 
-    d3.select(`${this.selector} svg`)
+   this.parts[`points_${this.indicator}`] = d3.select(`${this.selector} svg`)
       .append("g")
       .attr("class", "plot-point-lines")
       .selectAll("line")
@@ -1451,12 +1441,11 @@ class CCCCombinationChart extends Core {
     color = "black",
     { r = 5, width, translateX = 0, translateY = 0 } = {}
   ) {
-    this.dotIteration++;
     if (this.width !== 0 || this.height !== 0) {
       !width ? (width = this.width) : (this.width = width);
-      d3.select(`${this.selector} svg`)
+      this.parts[`dots_${this.indicator}`] = d3.select(`${this.selector} svg`)
         .append("g")
-        .attr("class", `dots-${this.dotIteration}`)
+        .attr("class", `dots-${this.indicator}`)
         .attr("width", this.width)
         .selectAll("circle")
         .data(this.data)
@@ -1491,7 +1480,8 @@ class CCCCombinationChart extends Core {
     axisLabels,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + "  svg")
+      this.xAxisIterator++
+     this.parts[`xAxis_${this.indicator}`] = d3.select(this.selector + "  svg")
         .append("g")
         .attr("class", "x-axis")
         .attr(
@@ -1532,7 +1522,7 @@ class CCCCombinationChart extends Core {
       this.domain = [];
       this.flatten;
       if (orient === "left") {
-        d3.select(this.selector + " svg")
+       this.parts[`yAxis_${this.indicator}`] = d3.select(this.selector + " svg")
           .append("g")
           .attr("class", "y-axis")
           .attr("transform", `translate(${this.margin},${this.margin / 2})`)
@@ -1614,10 +1604,9 @@ class CCCCombinationChart extends Core {
     if (this.width !== 0 || this.height !== 0) {
       !stat ? (stat = this.stat) : (this.stat = stat);
       !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
-      this.labelIteration++;
       d3.select(this.selector + " svg")
         .append("g")
-        .attr("class", `labels-${this.labelIteration}`)
+        .attr("class", `labels-${this.indicator}`)
         .selectAll("text")
         .data(this.data)
         .enter()
@@ -1670,7 +1659,7 @@ class CCCCombinationChart extends Core {
 
       if (formatPunctuation) {
         let labels = document.querySelectorAll(
-          `${this.selector} svg .labels-${this.labelIteration} text`
+          `${this.selector} svg .labels-${this.indicator} text`
         );
 
         for (let label of labels) {
