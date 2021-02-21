@@ -4,6 +4,7 @@ class Core {
     this.data = "";
     this.indicator = "";
     this.stat = "";
+    this.parts = {};
     this.height = 0;
     this.width = 0;
     this.margin = 50;
@@ -144,7 +145,6 @@ class Core {
     return this;
   }
 
-
   //adds legend. Renders legend based on objects in the legend array
   addLegend({ legendLabel } = {}) {
     this.root
@@ -194,11 +194,11 @@ class CCCVerticalBarChart extends Core {
   }
 
   //methods
-  createChart({width = 300, height = 400, data, indicator, stat } = {}) {
-    !data ? data = this.data : this.data = data;
-    !indicator ? indicator = this.indicator : this.indicator = indicator;
-    !stat ? stat = this.stat : this.stat = stat
-    
+  createChart({ width = 300, height = 400, data, indicator, stat } = {}) {
+    !data ? (data = this.data) : (this.data = data);
+    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
+    !stat ? (stat = this.stat) : (this.stat = stat);
+
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${this.indicator}`];
@@ -209,8 +209,9 @@ class CCCVerticalBarChart extends Core {
     if (width && height) {
       this.flatten;
       this.setParentDimension;
-      this.root
-        .append("svg")
+      this.parts.svg = this.root.append("svg");
+
+      this.parts.svg
         .attr("width", this.width + this.margin * 2)
         .attr("height", this.height + this.margin);
       return this;
@@ -219,15 +220,19 @@ class CCCVerticalBarChart extends Core {
 
   addBars({ padding = 0.2, opacity = 1 } = {}) {
     this.padding = padding;
-    d3.select(`${this.selector} svg`)
+    this.parts.bars = this.parts.svg
       .append("g")
       .attr("class", "bars")
       .selectAll("rect")
       .data(this.data)
       .enter()
       .append("rect")
-      .attr("height", () => { return 0 }) // always equal to 0
-      .attr("y", () => { return this.scaleLinearVertical(0); })
+      .attr("height", () => {
+        return 0;
+      }) // always equal to 0
+      .attr("y", () => {
+        return this.scaleLinearVertical(0);
+      })
       .attr("x", (d) => this.scaleBandHorizontal(d[`${this.indicator}`]))
       .attr("width", this.scaleBandHorizontal.bandwidth())
       .attr("transform", `translate(${this.margin},${this.margin / 2})`)
@@ -278,7 +283,8 @@ class CCCVerticalBarChart extends Core {
     axisLabels,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + "  svg")
+      this.parts.xAxis = d3
+        .select(this.selector + "  svg")
         .append("g")
         .attr("class", "x-axis")
         .attr(
@@ -315,7 +321,7 @@ class CCCVerticalBarChart extends Core {
     axisLabel,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + " svg")
+     this.parts.yAxis = d3.select(this.selector + " svg")
         .append("g")
         .attr("class", "y-axis")
         .attr("transform", `translate(${this.margin},${this.margin / 2})`)
@@ -364,7 +370,7 @@ class CCCVerticalBarChart extends Core {
     show = false,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + " svg")
+    this.parts.labels = d3.select(this.selector + " svg")
         .append("g")
         .attr("class", "labels")
         .selectAll("text")
@@ -372,17 +378,18 @@ class CCCVerticalBarChart extends Core {
         .enter()
         .append("text")
         .text((d) => {
-
           if (Array.isArray(show)) {
-            let valuesArray = Array.from(this.data.map(obj => obj[`${this.stat}`]))
-            if (show.includes('first')) {
+            let valuesArray = Array.from(
+              this.data.map((obj) => obj[`${this.stat}`])
+            );
+            if (show.includes("first")) {
               if (d[`${this.stat}`] === valuesArray[0]) {
-                return d[`${this.stat}`]
+                return d[`${this.stat}`];
               }
             }
-            if (show.includes('last')) {
+            if (show.includes("last")) {
               if (d[`${this.stat}`] === valuesArray[valuesArray.length - 1]) {
-                return (d[`${this.stat}`])
+                return d[`${this.stat}`];
               }
             }
 
@@ -390,7 +397,8 @@ class CCCVerticalBarChart extends Core {
               if (d[`${this.stat}`] === this.localMax) {
                 return d[`${this.stat}`];
               }
-            } if (show.includes("min")) {
+            }
+            if (show.includes("min")) {
               if (d[`${this.stat}`] === this.localMin) {
                 return d[`${this.stat}`];
               }
@@ -424,8 +432,7 @@ class CCCVerticalBarChart extends Core {
           if (label.textContent) {
             if (formatPunctuation === "addPercent") {
               label.textContent = label.textContent + "%";
-            }
-            else if (
+            } else if (
               formatPunctuation === "commaSeparate" ||
               formatPunctuation === false
             ) {
@@ -465,16 +472,16 @@ class CCCHorizontalBarChart extends Core {
   }
 
   //methods
-  createChart({ width = 400, height = 300, data, indicator, stat} = {}) {
-    !data ? data = this.indicator : this.data = data
-    !indicator ? indicator = this.indicator : this.indicator = indicator ;
-    !stat ? stat = this.stat : this.stat = stat;
+  createChart({ width = 400, height = 300, data, indicator, stat } = {}) {
+    !data ? (data = this.indicator) : (this.data = data);
+    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
+    !stat ? (stat = this.stat) : (this.stat = stat);
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${this.indicator}`];
     }
     this.width = width;
-    this.wrapperWidth = width
+    this.wrapperWidth = width;
     this.height = height;
     if (width && height) {
       this.flatten;
@@ -499,7 +506,9 @@ class CCCHorizontalBarChart extends Core {
       .data(this.data)
       .enter()
       .append("rect")
-      .attr("x", () => { return this.scaleLinearHorizontal(0); })
+      .attr("x", () => {
+        return this.scaleLinearHorizontal(0);
+      })
       .attr("y", (d) => this.scaleBandVertical(d[`${this.indicator}`]))
       .attr("transform", `translate(0,${this.margin / 2})`)
       .style("opacity", opacity)
@@ -523,7 +532,7 @@ class CCCHorizontalBarChart extends Core {
         } else {
           return Math.abs(
             this.scaleLinearHorizontal(d[`${this.stat}`]) -
-            this.scaleLinearHorizontal(0)
+              this.scaleLinearHorizontal(0)
           );
         }
       });
@@ -634,7 +643,7 @@ class CCCHorizontalBarChart extends Core {
     color = "black",
     fontWeight = "normal",
     fontSize = null,
-    show = false
+    show = false,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
       d3.select(this.selector + " svg")
@@ -646,15 +655,17 @@ class CCCHorizontalBarChart extends Core {
         .append("text")
         .text((d) => {
           if (Array.isArray(show)) {
-            let valuesArray = Array.from(this.data.map(obj => obj[`${this.stat}`]))
-            if (show.includes('first')) {
+            let valuesArray = Array.from(
+              this.data.map((obj) => obj[`${this.stat}`])
+            );
+            if (show.includes("first")) {
               if (d[`${this.stat}`] === valuesArray[0]) {
-                return d[`${this.stat}`]
+                return d[`${this.stat}`];
               }
             }
-            if (show.includes('last')) {
+            if (show.includes("last")) {
               if (d[`${this.stat}`] === valuesArray[valuesArray.length - 1]) {
-                return (d[`${this.stat}`])
+                return d[`${this.stat}`];
               }
             }
 
@@ -662,7 +673,8 @@ class CCCHorizontalBarChart extends Core {
               if (d[`${this.stat}`] === this.localMax) {
                 return d[`${this.stat}`];
               }
-            } if (show.includes("min")) {
+            }
+            if (show.includes("min")) {
               if (d[`${this.stat}`] === this.localMin) {
                 return d[`${this.stat}`];
               }
@@ -695,8 +707,7 @@ class CCCHorizontalBarChart extends Core {
           if (label.textContent) {
             if (formatPunctuation === "addPercent") {
               label.textContent = label.textContent + "%";
-            }
-            else if (
+            } else if (
               formatPunctuation === "commaSeparate" ||
               formatPunctuation === false
             ) {
@@ -705,7 +716,6 @@ class CCCHorizontalBarChart extends Core {
           }
         }
       }
-
 
       return this;
     }
@@ -751,10 +761,10 @@ class CCCPieChart extends Core {
       .padRadius(50);
   }
 
-  createChart({width = 300, height = 300, data, indicator, stat } = {}) {
-    !data ? data = this.data : this.data = data
-    !indicator ? indicator = this.indicator : this.indicator = indicator;
-    !stat ? stat = this.stat : this.stat = stat;
+  createChart({ width = 300, height = 300, data, indicator, stat } = {}) {
+    !data ? (data = this.data) : (this.data = data);
+    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
+    !stat ? (stat = this.stat) : (this.stat = stat);
     for (let i = 0; i < this.data.length; i++) {
       this.legend.push({});
       this.legend[i].indicator = this.data[i][`${indicator}`];
@@ -773,7 +783,8 @@ class CCCPieChart extends Core {
         .attr("class", "pie-chart")
         .attr(
           "transform",
-          `translate(${this.width / 2 + this.margin},${this.height / 2 + this.margin
+          `translate(${this.width / 2 + this.margin},${
+            this.height / 2 + this.margin
           })`
         )
         .selectAll("path")
@@ -794,7 +805,7 @@ class CCCPieChart extends Core {
     color = "black",
     fontWeight = "normal",
     fontSize = null,
-    show = false
+    show = false,
   } = {}) {
     let vm = this;
     d3.select(`${this.selector} svg`)
@@ -802,7 +813,8 @@ class CCCPieChart extends Core {
       .attr("class", "pie-chart-labels")
       .attr(
         "transform",
-        `translate(${this.width / 2 + this.margin},${this.height / 2 + this.margin
+        `translate(${this.width / 2 + this.margin},${
+          this.height / 2 + this.margin
         })`
       )
       .selectAll("text")
@@ -818,15 +830,17 @@ class CCCPieChart extends Core {
       .attr("text-anchor", "middle")
       .text((d) => {
         if (Array.isArray(show)) {
-          let valuesArray = Array.from(this.data.map(obj => obj[`${this.stat}`]))
-          if (show.includes('first')) {
+          let valuesArray = Array.from(
+            this.data.map((obj) => obj[`${this.stat}`])
+          );
+          if (show.includes("first")) {
             if (d.value === valuesArray[0]) {
-              return d.value
+              return d.value;
             }
           }
-          if (show.includes('last')) {
+          if (show.includes("last")) {
             if (d.value === valuesArray[valuesArray.length - 1]) {
-              return (d.value)
+              return d.value;
             }
           }
 
@@ -834,7 +848,8 @@ class CCCPieChart extends Core {
             if (d.value === this.localMax) {
               return d.value;
             }
-          } if (show.includes("min")) {
+          }
+          if (show.includes("min")) {
             if (d.value === this.localMin) {
               return d.value;
             }
@@ -842,7 +857,6 @@ class CCCPieChart extends Core {
         } else if (!show) {
           return d.value;
         }
-
       })
       .attr("fill", color)
       .style("font-family", "sans-serif")
@@ -857,8 +871,7 @@ class CCCPieChart extends Core {
         if (label.textContent) {
           if (formatPunctuation === "addPercent") {
             label.textContent = label.textContent + "%";
-          }
-          else if (
+          } else if (
             formatPunctuation === "commaSeparate" ||
             formatPunctuation === false
           ) {
@@ -901,12 +914,12 @@ class CCCLineChart extends Core {
 
   //methods
   createChart({ width = 400, height = 300, data, indicator, stat } = {}) {
-    !data ? data = this.data : this.data = data;
-    !indicator ? indicator = this.indicator : this.indicator = indicator;
-    !stat ? stat = this.stat : this.stat = stat;
+    !data ? (data = this.data) : (this.data = data);
+    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
+    !stat ? (stat = this.stat) : (this.stat = stat);
     this.stat = stat;
     this.width = width;
-    this.wrapperWidth = width
+    this.wrapperWidth = width;
     this.height = height;
     if (width && height) {
       this.flatten;
@@ -1016,32 +1029,32 @@ class CCCLineChart extends Core {
       .attr("stroke-width", 2)
       .attr("fill", "none");
 
-    let line = d3.select(`${this.selector} svg .line-${this.lineIteration} path`)
-    let length = line._groups[0][0].getTotalLength()
-    line.attr('stroke-dasharray', length)
-      .attr('stroke-dashoffset', length)
+    let line = d3.select(
+      `${this.selector} svg .line-${this.lineIteration} path`
+    );
+    let length = line._groups[0][0].getTotalLength();
+    line
+      .attr("stroke-dasharray", length)
+      .attr("stroke-dashoffset", length)
       .transition()
       .duration(500)
-      .attr('stroke-dashoffset', 0)
-
+      .attr("stroke-dashoffset", 0);
 
     return this;
   }
 
-  addLabels(
-    {
-      stat,
-      formatPunctuation = "commaSeparate",
-      dx = 0,
-      dy = 0,
-      color = "black",
-      fontWeight = "normal",
-      fontSize = null,
-      show = false
-    } = {}
-  ) {
+  addLabels({
+    stat,
+    formatPunctuation = "commaSeparate",
+    dx = 0,
+    dy = 0,
+    color = "black",
+    fontWeight = "normal",
+    fontSize = null,
+    show = false,
+  } = {}) {
     this.labelIteration++;
-    !stat ? stat = this.stat : this.stat = stat;
+    !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
       d3.select(this.selector + " svg")
         .append("g")
@@ -1052,15 +1065,17 @@ class CCCLineChart extends Core {
         .append("text")
         .text((d) => {
           if (Array.isArray(show)) {
-            let valuesArray = Array.from(this.data.map(obj => obj[`${this.stat}`]))
-            if (show.includes('first')) {
+            let valuesArray = Array.from(
+              this.data.map((obj) => obj[`${this.stat}`])
+            );
+            if (show.includes("first")) {
               if (d[`${this.stat}`] === valuesArray[0]) {
-                return d[`${this.stat}`]
+                return d[`${this.stat}`];
               }
             }
-            if (show.includes('last')) {
+            if (show.includes("last")) {
               if (d[`${this.stat}`] === valuesArray[valuesArray.length - 1]) {
-                return (d[`${this.stat}`])
+                return d[`${this.stat}`];
               }
             }
 
@@ -1068,7 +1083,8 @@ class CCCLineChart extends Core {
               if (d[`${this.stat}`] === this.localMax) {
                 return d[`${this.stat}`];
               }
-            } if (show.includes("min")) {
+            }
+            if (show.includes("min")) {
               if (d[`${this.stat}`] === this.localMin) {
                 return d[`${this.stat}`];
               }
@@ -1101,8 +1117,7 @@ class CCCLineChart extends Core {
           if (label.textContent) {
             if (formatPunctuation === "addPercent") {
               label.textContent = label.textContent + "%";
-            }
-            else if (
+            } else if (
               formatPunctuation === "commaSeparate" ||
               formatPunctuation === false
             ) {
@@ -1116,11 +1131,9 @@ class CCCLineChart extends Core {
     }
   }
 
-  addDots(color = "black", {
-    stat,
-    r = 5 } = {}) {
+  addDots(color = "black", { stat, r = 5 } = {}) {
     this.dotIteration++;
-    !stat ? stat = this.stat : this.stat = stat;
+    !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
       d3.select(`${this.selector} svg`)
         .append("g")
@@ -1144,7 +1157,7 @@ class CCCLineChart extends Core {
       return this;
     }
   }
-} 
+}
 
 class CCCCombinationChart extends Core {
   constructor(selector) {
@@ -1158,17 +1171,17 @@ class CCCCombinationChart extends Core {
 
   //local flatten method for this class overrides the super flatten method to account for the potential use of different scales
   get flatten() {
-    this.domain.pop()
+    this.domain.pop();
     return this.data.forEach((obj) => {
-     this.domain.push(obj[`${this.stat}`])
+      this.domain.push(obj[`${this.stat}`]);
     });
   }
 
   //methods
-  createChart({ width = 300, height=300, data, indicator, stat } = {}) {
-    !data ? data = this.data : this.data = data
-    !indicator ? indicator = this.indicator : this.indicator = indicator;
-    !stat ? stat = this.stat : this.stat = stat;
+  createChart({ width = 300, height = 300, data, indicator, stat } = {}) {
+    !data ? (data = this.data) : (this.data = data);
+    !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
+    !stat ? (stat = this.stat) : (this.stat = stat);
     this.width = width;
     this.wrapperWidth = width;
     this.height = height;
@@ -1226,8 +1239,12 @@ class CCCCombinationChart extends Core {
           return color;
         }
       })
-      .attr("height", () => { return 0 }) // always equal to 0
-      .attr("y", () => { return this.scaleLinearVertical(0); })
+      .attr("height", () => {
+        return 0;
+      }) // always equal to 0
+      .attr("y", () => {
+        return this.scaleLinearVertical(0);
+      })
       .transition()
       .duration(300)
       .attr("y", (d) => {
@@ -1268,10 +1285,7 @@ class CCCCombinationChart extends Core {
     return this;
   }
 
-  addLine(
-    color = "black",
-    { width, translateX = 0, translateY = 0 } = {}
-  ) {
+  addLine(color = "black", { width, translateX = 0, translateY = 0 } = {}) {
     this.lineIteration++;
     !width ? (width = this.width) : (this.width = width);
     let obj = {};
@@ -1297,13 +1311,16 @@ class CCCCombinationChart extends Core {
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       );
 
-    let line = d3.select(`${this.selector} svg .line-${this.lineIteration} path`)
-    let length = line._groups[0][0].getTotalLength()
-    line.attr('stroke-dasharray', length)
-      .attr('stroke-dashoffset', length)
+    let line = d3.select(
+      `${this.selector} svg .line-${this.lineIteration} path`
+    );
+    let length = line._groups[0][0].getTotalLength();
+    line
+      .attr("stroke-dasharray", length)
+      .attr("stroke-dashoffset", length)
       .transition()
       .duration(500)
-      .attr('stroke-dashoffset', 0)
+      .attr("stroke-dashoffset", 0);
 
     return this;
   }
@@ -1357,8 +1374,8 @@ class CCCCombinationChart extends Core {
         "transform",
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       )
-      .attr('y1', this.scaleLinearVertical(0))
-      .attr('y2', this.scaleLinearVertical(0))
+      .attr("y1", this.scaleLinearVertical(0))
+      .attr("y2", this.scaleLinearVertical(0))
       .transition()
       .duration(300)
       .attr("y1", (d) => this.scaleLinearVertical(d[`${this.stat}`]))
@@ -1384,7 +1401,7 @@ class CCCCombinationChart extends Core {
           this.scaleBandHorizontal(d[`${this.indicator}`]) * spreadX +
           this.scaleBandHorizontal.bandwidth() / 2
       )
-      .attr('cy', this.scaleLinearVertical(0))
+      .attr("cy", this.scaleLinearVertical(0))
       .attr("r", r)
       .attr(
         "transform",
@@ -1431,7 +1448,7 @@ class CCCCombinationChart extends Core {
 
   addDots(
     color = "black",
-    {r = 5, width, translateX = 0, translateY = 0 } = {}
+    { r = 5, width, translateX = 0, translateY = 0 } = {}
   ) {
     this.dotIteration++;
     if (this.width !== 0 || this.height !== 0) {
@@ -1456,7 +1473,8 @@ class CCCCombinationChart extends Core {
         .attr("r", r)
         .attr(
           "transform",
-          `translate(${this.margin + translateX},${this.margin / 2 + translateY
+          `translate(${this.margin + translateX},${
+            this.margin / 2 + translateY
           })`
         )
         .attr("fill", color);
@@ -1510,7 +1528,7 @@ class CCCCombinationChart extends Core {
     orient = "left",
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-     this.domain = [];
+      this.domain = [];
       this.flatten;
       if (orient === "left") {
         d3.select(this.selector + " svg")
@@ -1590,12 +1608,12 @@ class CCCCombinationChart extends Core {
     color = "black",
     fontWeight = "normal",
     fontSize = null,
-    show = false
+    show = false,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      !stat ? stat = this.stat : this.stat = stat;
+      !stat ? (stat = this.stat) : (this.stat = stat);
       !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
-      this.labelIteration++
+      this.labelIteration++;
       d3.select(this.selector + " svg")
         .append("g")
         .attr("class", `labels-${this.labelIteration}`)
@@ -1605,16 +1623,17 @@ class CCCCombinationChart extends Core {
         .append("text")
         .text((d) => {
           if (Array.isArray(show)) {
-            let valuesArray = Array.from(this.data.map(obj => obj[`${this.stat}`]))
-            if (show.includes('first')) {
-
+            let valuesArray = Array.from(
+              this.data.map((obj) => obj[`${this.stat}`])
+            );
+            if (show.includes("first")) {
               if (d[`${this.stat}`] === valuesArray[0]) {
-                return d[`${this.stat}`]
+                return d[`${this.stat}`];
               }
             }
-            if (show.includes('last')) {
+            if (show.includes("last")) {
               if (d[`${this.stat}`] === valuesArray[valuesArray.length - 1]) {
-                return (d[`${this.stat}`])
+                return d[`${this.stat}`];
               }
             }
 
@@ -1622,7 +1641,8 @@ class CCCCombinationChart extends Core {
               if (d[`${this.stat}`] === this.localMax) {
                 return d[`${this.stat}`];
               }
-            } if (show.includes("min")) {
+            }
+            if (show.includes("min")) {
               if (d[`${this.stat}`] === this.localMin) {
                 return d[`${this.stat}`];
               }
@@ -1656,8 +1676,7 @@ class CCCCombinationChart extends Core {
           if (label.textContent) {
             if (formatPunctuation === "addPercent") {
               label.textContent = label.textContent + "%";
-            }
-            else if (
+            } else if (
               formatPunctuation === "commaSeparate" ||
               formatPunctuation === false
             ) {
@@ -1667,11 +1686,16 @@ class CCCCombinationChart extends Core {
         }
       }
 
-
       return this;
     }
   }
 }
 
 // exports
-export { CCCVerticalBarChart, CCCHorizontalBarChart, CCCPieChart, CCCLineChart, CCCCombinationChart }
+export {
+  CCCVerticalBarChart,
+  CCCHorizontalBarChart,
+  CCCPieChart,
+  CCCLineChart,
+  CCCCombinationChart,
+};
