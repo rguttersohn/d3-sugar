@@ -1,6 +1,9 @@
 class Core {
-  constructor(selector) {
+  constructor(data, selector) {
     this.selector = selector;
+    this.data = data;
+    this.indicator = "";
+    this.stat = "";
     this.height = 0;
     this.width = 0;
     this.margin = 50;
@@ -184,11 +187,8 @@ class Core {
 }
 
 class CCCVerticalBarChart extends Core {
-  constructor(data, selector, domain) {
-    super(selector, domain);
-    this.data = data;
-    this.indicator = "";
-    this.stat = "";
+  constructor(data, selector) {
+    super(data, selector);
   }
 
   //methods
@@ -457,8 +457,7 @@ class CCCVerticalBarChart extends Core {
 
 class CCCHorizontalBarChart extends Core {
   constructor(data, selector) {
-    super(selector);
-    this.data = data;
+    super(data, selector);
     this.indicator = "";
     this.stat = "";
   }
@@ -731,10 +730,7 @@ class CCCHorizontalBarChart extends Core {
 
 class CCCPieChart extends Core {
   constructor(data, selector, colors) {
-    super(selector, colors);
-    this.data = data;
-    this.indicator = "";
-    this.stat = "";
+    super(data, selector, colors);
   }
 
   //getters
@@ -892,11 +888,8 @@ class CCCPieChart extends Core {
 }
 
 class CCCLineChart extends Core {
-  constructor(data, selector, domain) {
-    super(selector, domain);
-    this.data = data;
-    this.stat = "";
-    this.indicator = "";
+  constructor(data, selector) {
+    super(data, selector);
     this.lineIteration = 0;
     this.dotIteration = 0;
     this.labelIteration = 0;
@@ -1150,10 +1143,7 @@ class CCCLineChart extends Core {
 
 class CCCCombinationChart extends Core {
   constructor(data, selector) {
-    super(selector);
-    this.data = data;
-    this.indicator = "";
-    this.stat = "";
+    super(data, selector);
     this.lineIteration = 0;
     this.dotIteration = 0;
     this.labelIteration = 0;
