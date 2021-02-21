@@ -321,7 +321,8 @@ class CCCVerticalBarChart extends Core {
     axisLabel,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-     this.parts.yAxis = d3.select(this.selector + " svg")
+      this.parts.yAxis = d3
+        .select(this.selector + " svg")
         .append("g")
         .attr("class", "y-axis")
         .attr("transform", `translate(${this.margin},${this.margin / 2})`)
@@ -370,7 +371,8 @@ class CCCVerticalBarChart extends Core {
     show = false,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-    this.parts.labels = d3.select(this.selector + " svg")
+      this.parts.labels = d3
+        .select(this.selector + " svg")
         .append("g")
         .attr("class", "labels")
         .selectAll("text")
@@ -486,8 +488,8 @@ class CCCHorizontalBarChart extends Core {
     if (width && height) {
       this.flatten;
       this.setParentDimension;
-      this.root
-        .append("svg")
+      this.parts.svg = this.root.append("svg");
+      this.parts.svg
         .attr("width", this.width + this.margin * 2)
         .attr("height", this.height + this.margin)
         .append("g")
@@ -498,7 +500,8 @@ class CCCHorizontalBarChart extends Core {
 
   addBars({ padding = 0.2, opacity = 1 } = {}) {
     this.padding = padding;
-    d3.select(`${this.selector} svg`)
+    this.parts.bars = d3
+      .select(`${this.selector} svg`)
       .append("g")
       .attr("class", "bars")
       .append("g")
@@ -560,7 +563,7 @@ class CCCHorizontalBarChart extends Core {
     axisLabels,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + " svg")
+     this.parts.yAxis = d3.select(this.selector + " svg")
         .append("g")
         .attr("class", "y-axis")
         .attr("transform", `translate(${this.margin},${this.margin / 2})`)
@@ -595,7 +598,7 @@ class CCCHorizontalBarChart extends Core {
     axisLabels,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + "  svg")
+    this.parts.xAxis = d3.select(this.selector + "  svg")
         .append("g")
         .attr("class", "x-axis")
         .attr(
@@ -646,7 +649,7 @@ class CCCHorizontalBarChart extends Core {
     show = false,
   } = {}) {
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + " svg")
+    this.parts.labels = d3.select(this.selector + " svg")
         .append("g")
         .attr("class", "labels")
         .selectAll("text")
@@ -746,12 +749,12 @@ class CCCPieChart extends Core {
     super(selector, colors);
   }
 
-  //getters
+  //local getters
   get pie() {
     return d3.pie().value((d) => d[`${this.stat}`])(this.data);
   }
 
-  //methods
+  //local methods
   get arc() {
     return d3
       .arc()
@@ -775,9 +778,8 @@ class CCCPieChart extends Core {
     if (width && height) {
       this.flatten;
       this.setParentDimension;
-      this.root
-        .append("svg")
-        .attr("width", this.width + this.margin * 2)
+     this.parts.svg = this.root.append("svg")
+      this.parts.svg.attr("width", this.width + this.margin * 2)
         .attr("height", this.height + this.margin * 2)
         .append("g")
         .attr("class", "pie-chart")
@@ -808,7 +810,7 @@ class CCCPieChart extends Core {
     show = false,
   } = {}) {
     let vm = this;
-    d3.select(`${this.selector} svg`)
+    this.parts.labels = d3.select(`${this.selector} svg`)
       .append("g")
       .attr("class", "pie-chart-labels")
       .attr(
@@ -924,9 +926,8 @@ class CCCLineChart extends Core {
     if (width && height) {
       this.flatten;
       this.setParentDimension;
-      this.root
-        .append("svg")
-        .attr("width", this.width + this.margin)
+      this.parts.svg = this.root.append("svg")
+      this.parts.svg.attr("width", this.width + this.margin)
         .attr("height", this.height + this.margin + this.margin)
         .append("g");
       return this;
@@ -940,7 +941,7 @@ class CCCLineChart extends Core {
     hideLine = false,
     axisLabels,
   } = {}) {
-    d3.select(`${this.selector} svg`)
+    this.parts.xAxis = d3.select(`${this.selector} svg`)
       .append("g")
       .attr("class", "x-axis")
       .attr(
@@ -975,7 +976,7 @@ class CCCLineChart extends Core {
     hideLine = false,
     axisLabels,
   } = {}) {
-    d3.select(`${this.selector} svg`)
+    this.parts.yAxis = d3.select(`${this.selector} svg`)
       .append("g")
       .attr("class", "y-axis")
       .attr("transform", `translate(${this.margin},${this.margin})`)
@@ -1019,7 +1020,7 @@ class CCCLineChart extends Core {
     obj.color = color;
     obj.indicator = this.indicator;
     this.legend.push(obj);
-    d3.select(`${this.selector} svg`)
+    this.parts[`line_${this.lineIteration}`] = d3.select(`${this.selector} svg`)
       .append("g")
       .attr("class", `line-${this.lineIteration}`)
       .append("path")
@@ -1056,7 +1057,7 @@ class CCCLineChart extends Core {
     this.labelIteration++;
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(this.selector + " svg")
+    this.parts[`labels_${this.labelIteration}`]= d3.select(this.selector + " svg")
         .append("g")
         .attr("class", `labels-${this.labelIteration}`)
         .selectAll("text")
@@ -1135,7 +1136,7 @@ class CCCLineChart extends Core {
     this.dotIteration++;
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
-      d3.select(`${this.selector} svg`)
+    this.parts[`dots_${this.dotIteration}`] = d3.select(`${this.selector} svg`)
         .append("g")
         .attr("class", `dots-${this.dotIteration}`)
         .selectAll("circle")
