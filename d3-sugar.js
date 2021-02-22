@@ -267,7 +267,7 @@ class CCCVerticalBarChart extends Core {
     return this;
   }
 
-  addTransition({duration = 300} = {}) {
+  addTransition({duration = 300, ease = d3.easeCubic, delay = 0} = {}) {
     this.parts.bars
       .attr("height", () => {
         return 0;
@@ -276,7 +276,9 @@ class CCCVerticalBarChart extends Core {
         return this.scaleLinearVertical(0);
       })
       .transition()
+      .delay(delay)
       .duration(duration)
+      .ease(ease)
       .attr("y", (d) => {
         if (this.min >= 0) {
           return this.scaleLinearVertical(d[`${this.stat}`]);
