@@ -1091,7 +1091,7 @@ class CCCLineChart extends Core {
     obj.color = color;
     obj.indicator = this.indicator;
     this.legend.push(obj);
-    this.parts[`line_${this.indicator}`] = d3
+    this.parts[`line_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", `line-${this.indicator}`)
@@ -1102,16 +1102,21 @@ class CCCLineChart extends Core {
       .attr("stroke-width", 2)
       .attr("fill", "none");
 
-    let line = d3.select(`${this.selector} svg .line-${this.indicator} path`);
-    let length = line._groups[0][0].getTotalLength();
-    line
+    return this;
+  }
+
+  addTransition({duration = 300, ease = d3.easeCubic, delay = 0}={}){
+    let length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
+    this.parts[`line_${this.stat}`]
       .attr("stroke-dasharray", length)
       .attr("stroke-dashoffset", length)
       .transition()
-      .duration(500)
-      .attr("stroke-dashoffset", 0);
+      .delay(delay)
+      .duration(duration)
+      .ease(ease)
+      .attr("stroke-dashoffset", 0)
 
-    return this;
+      return this
   }
 
   addLabels({
@@ -1124,13 +1129,12 @@ class CCCLineChart extends Core {
     fontSize = null,
     show = false,
   } = {}) {
-    this.labelIteration++;
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
-      this.parts[`labels_${this.labelIteration}`] = d3
+      this.parts[`labels_${this.stat}`] = d3
         .select(this.selector + " svg")
         .append("g")
-        .attr("class", `labels-${this.labelIteration}`)
+        .attr("class", `labels-${this.stat}`)
         .selectAll("text")
         .data(this.data)
         .enter()
@@ -1183,7 +1187,7 @@ class CCCLineChart extends Core {
 
       if (formatPunctuation) {
         let labels = document.querySelectorAll(
-          `${this.selector} svg .labels-${this.labelIteration} text`
+          `${this.selector} svg .labels-${this.indicator} text`
         );
         for (let label of labels) {
           if (label.textContent) {
@@ -1206,10 +1210,10 @@ class CCCLineChart extends Core {
   addDots(color = "black", { stat, r = 5 } = {}) {
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
-      this.parts[`dots_${this.indicator}`] = d3
+      this.parts[`dots_${this.stat}`] = d3
         .select(`${this.selector} svg`)
         .append("g")
-        .attr("class", `dots-${this.indicator}`)
+        .attr("class", `dots-${this.stat}`)
         .selectAll("circle")
         .data(this.data)
         .enter()
@@ -1285,7 +1289,7 @@ class CCCCombinationChart extends Core {
       this.legend.push(obj);
     }
 
-    this.parts[`bars_${this.indicator}`] = d3
+    this.parts[`bars_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", "bars")
@@ -1361,7 +1365,7 @@ class CCCCombinationChart extends Core {
     obj.color = color;
     obj.indicator = this.stat;
     this.legend.push(obj);
-    this.parts[`line_${this.indicator}`] = d3
+    this.parts[`line_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", `line-${this.indicator}`)
@@ -1381,7 +1385,7 @@ class CCCCombinationChart extends Core {
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       );
 
-    let line = d3.select(`${this.selector} svg .line-${this.indicator} path`);
+    let line = d3.select(`${this.selector} svg .line-${this.stat} path`);
     let length = line._groups[0][0].getTotalLength();
     line
       .attr("stroke-dasharray", length)
@@ -1416,7 +1420,7 @@ class CCCCombinationChart extends Core {
       this.legend.push(obj);
     }
 
-    this.parts[`points_${this.indicator}`] = d3
+    this.parts[`points_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", "plot-point-lines")
@@ -1456,9 +1460,9 @@ class CCCCombinationChart extends Core {
         }
       });
 
-    d3.select(`${this.selector} svg`)
+    this.parts.svg
       .append("g")
-      .attr("class", "plot-points")
+      .attr("class", `points-${this.stat}`)
       .attr("width", this.width)
       .selectAll("circle")
       .data(this.data)
@@ -1521,10 +1525,10 @@ class CCCCombinationChart extends Core {
   ) {
     if (this.width !== 0 || this.height !== 0) {
       !width ? (width = this.width) : (this.width = width);
-      this.parts[`dots_${this.indicator}`] = d3
+      this.parts[`dots_${this.stat}`] = d3
         .select(`${this.selector} svg`)
         .append("g")
-        .attr("class", `dots-${this.indicator}`)
+        .attr("class", `dots-${this.stat}`)
         .attr("width", this.width)
         .selectAll("circle")
         .data(this.data)
@@ -1563,7 +1567,7 @@ class CCCCombinationChart extends Core {
       this.parts[`xAxis_${this.indicator}`] = d3
         .select(this.selector + "  svg")
         .append("g")
-        .attr("class", "x-axis")
+        .attr("class", `x-axis-${this.indicator}`)
         .attr(
           "transform",
           `translate(${this.margin},${this.height + this.margin / 2})`
@@ -1602,10 +1606,9 @@ class CCCCombinationChart extends Core {
       this.domain = [];
       this.flatten;
       if (orient === "left") {
-        this.parts[`yAxis_${this.indicator}`] = d3
-          .select(this.selector + " svg")
+        this.parts[`yAxis_${this.stat}`] = this.parts.svg
           .append("g")
-          .attr("class", "y-axis")
+          .attr("class", `y-axis-${this.stat}`)
           .attr("transform", `translate(${this.margin},${this.margin / 2})`)
           .call(
             d3
@@ -1627,9 +1630,10 @@ class CCCCombinationChart extends Core {
               .tickPadding(tickPadding)
           );
       } else if (orient === "right") {
-        d3.select(this.selector + " svg")
+        
+        this.parts[`yAxis_${this.stat}`] = this.parts.svg
           .append("g")
-          .attr("class", "y-axis")
+          .attr("class", `y-axis-${this.stat}`)
           .attr(
             "transform",
             `translate(${this.margin + this.wrapperWidth},${this.margin / 2})`
@@ -1685,7 +1689,7 @@ class CCCCombinationChart extends Core {
     if (this.width !== 0 || this.height !== 0) {
       !stat ? (stat = this.stat) : (this.stat = stat);
       !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
-      d3.select(this.selector + " svg")
+      this.parts[`labels_${this.stat}`] = this.parts.svg
         .append("g")
         .attr("class", `labels-${this.indicator}`)
         .selectAll("text")
