@@ -1,15 +1,22 @@
 class Core {
   constructor(selector) {
     this.selector = selector;
+    // points  to the correct dataset, indicator and stat
     this.data = "";
     this.indicator = "";
     this.stat = "";
+
+    // holds nodes of the visuals
     this.parts = {};
+    // holds elements for rendering legend using addLegend method
+    this.legend = [];
+    // holds the domain in valid dataset.
+    this.domain = [];
+
+    // visual dimensions
     this.height = 0;
     this.width = 0;
     this.margin = 50;
-    this.legend = [];
-    this.domain = [];
     this.padding = "";
     this.wrapperWidth = 0;
   }
@@ -264,10 +271,11 @@ class CCCVerticalBarChart extends Core {
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
+
     return this;
   }
 
-  addTransition({duration = 300, ease = d3.easeCubic, delay = 0} = {}) {
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
     this.parts.bars
       .attr("height", () => {
         return 0;
@@ -299,8 +307,6 @@ class CCCVerticalBarChart extends Core {
           );
         }
       });
-      
-
     return this;
   }
 
@@ -538,15 +544,10 @@ class CCCHorizontalBarChart extends Core {
       .data(this.data)
       .enter()
       .append("rect")
-      .attr("x", () => {
-        return this.scaleLinearHorizontal(0);
-      })
       .attr("y", (d) => this.scaleBandVertical(d[`${this.indicator}`]))
       .attr("transform", `translate(0,${this.margin / 2})`)
       .style("opacity", opacity)
       .attr("height", (d) => this.scaleBandVertical.bandwidth())
-      .transition()
-      .duration(300)
       .attr("x", (d) => {
         if (this.min >= 0) {
           return this.margin;
@@ -582,6 +583,43 @@ class CCCHorizontalBarChart extends Core {
         .style("stroke-width", "1px");
     }
     return this;
+  }
+
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
+    this.parts.bars
+      .attr("width", 0)
+      .attr("x", (d) => {
+        if (this.min >= 0) {
+          return this.margin;
+        } else {
+          return this.scaleLinearHorizontal(0) + this.margin;
+        }
+      })
+      .transition()
+      .delay(delay)
+      .duration(duration)
+      .ease(ease)
+      .attr("width", (d) => {
+        if (this.min >= 0) {
+          return this.scaleLinearHorizontal(d[`${this.stat}`]);
+        } else {
+          return Math.abs(
+            this.scaleLinearHorizontal(d[`${this.stat}`]) -
+              this.scaleLinearHorizontal(0)
+          );
+        }
+      })
+      .attr("x", (d) => {
+        if (this.min >= 0) {
+          return this.margin;
+        } else {
+          if (d[`${this.stat}`] >= 0) {
+            return this.scaleLinearHorizontal(0) + this.margin;
+          } else {
+            return this.margin + this.scaleLinearHorizontal(d[`${this.stat}`]);
+          }
+        }
+      });
   }
 
   addYAxis({
