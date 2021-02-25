@@ -1105,7 +1105,7 @@ class CCCLineChart extends Core {
     return this;
   }
 
-  addTransition({duration = 300, ease = d3.easeCubic, delay = 0}={}){
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
     let length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
     this.parts[`line_${this.stat}`]
       .attr("stroke-dasharray", length)
@@ -1114,9 +1114,9 @@ class CCCLineChart extends Core {
       .delay(delay)
       .duration(duration)
       .ease(ease)
-      .attr("stroke-dashoffset", 0)
+      .attr("stroke-dashoffset", 0);
 
-      return this
+    return this;
   }
 
   addLabels({
@@ -1238,6 +1238,7 @@ class CCCLineChart extends Core {
 class CCCCombinationChart extends Core {
   constructor(selector) {
     super(selector);
+    this.transitionAttr = [];
   }
 
   //getters
@@ -1313,14 +1314,6 @@ class CCCCombinationChart extends Core {
           return color;
         }
       })
-      .attr("height", () => {
-        return 0;
-      }) // always equal to 0
-      .attr("y", () => {
-        return this.scaleLinearVertical(0);
-      })
-      .transition()
-      .duration(300)
       .attr("y", (d) => {
         if (this.min >= 0) {
           return this.scaleLinearVertical(d[`${this.stat}`]);
@@ -1356,6 +1349,44 @@ class CCCCombinationChart extends Core {
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
+
+    // add
+
+    // this.transitionAttributes.endCoord = {}
+    // this.transitionAttributes.startDimension = {}
+    // this.transitionAttributes.endDimension = {}
+
+   
+    this.transitionAttr.pop()
+    for (
+      let i = 0;
+      i < this.parts[`bars_${this.stat}`]._groups[0].length;
+      i++
+    ) {
+      let obj = new Object();
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].dimensionAttr = "height";
+      this.transitionAttr[i].coordAttr = "y";
+      this.transitionAttr[i].startCoord = this.scaleLinearVertical(0);
+      this.transitionAttr[i].startDimension = 0;
+      this.transitionAttr[i].endCoord = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('y'))
+      this.transitionAttr[i].endDimension = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('height'))
+    }
+
+    return this;
+  }
+
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
+    this.parts[`bars_${this.stat}`]
+      .attr(this.transitionAttr[0].coordAttr, (d, i) => this.transitionAttr[i].startCoord)
+      .attr(this.transitionAttr[0].dimensionAttr, (d, i) => this.transitionAttr[i].startDimension)
+      .transition()
+      .delay(delay)
+      .ease(ease)
+      .duration(duration)
+      .attr(this.transitionAttr[0].coordAttr, (d, i) => this.transitionAttr[i].endCoord)
+      .attr(this.transitionAttr[0].dimensionAttr, (d, i) => this.transitionAttr[i].endDimension);
+
     return this;
   }
 
@@ -1630,7 +1661,6 @@ class CCCCombinationChart extends Core {
               .tickPadding(tickPadding)
           );
       } else if (orient === "right") {
-        
         this.parts[`yAxis_${this.stat}`] = this.parts.svg
           .append("g")
           .attr("class", `y-axis-${this.stat}`)
