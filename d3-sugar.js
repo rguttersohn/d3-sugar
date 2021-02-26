@@ -1350,14 +1350,8 @@ class CCCCombinationChart extends Core {
         .style("stroke-width", "1px");
     }
 
-    // add
-
-    // this.transitionAttributes.endCoord = {}
-    // this.transitionAttributes.startDimension = {}
-    // this.transitionAttributes.endDimension = {}
-
-   
-    this.transitionAttr.pop()
+    // adding transition elements to transitionAttr array
+    this.transitionAttr = []
     for (
       let i = 0;
       i < this.parts[`bars_${this.stat}`]._groups[0].length;
@@ -1365,28 +1359,16 @@ class CCCCombinationChart extends Core {
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].dimensionAttr = "height";
-      this.transitionAttr[i].coordAttr = "y";
-      this.transitionAttr[i].startCoord = this.scaleLinearVertical(0);
-      this.transitionAttr[i].startDimension = 0;
-      this.transitionAttr[i].endCoord = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('y'))
-      this.transitionAttr[i].endDimension = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('height'))
+      this.transitionAttr[i].part = `bars_${this.stat}`
+      this.transitionAttr[i].attr_1 = "height";
+      this.transitionAttr[i].startAttr_1 = 0;
+      this.transitionAttr[i].endAttr_1 = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('height'))
+      this.transitionAttr[i].attr_2 = "y";
+      this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
+      this.transitionAttr[i].endAttr_2 = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('y')) 
+      
     }
-
-    return this;
-  }
-
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
-    this.parts[`bars_${this.stat}`]
-      .attr(this.transitionAttr[0].coordAttr, (d, i) => this.transitionAttr[i].startCoord)
-      .attr(this.transitionAttr[0].dimensionAttr, (d, i) => this.transitionAttr[i].startDimension)
-      .transition()
-      .delay(delay)
-      .ease(ease)
-      .duration(duration)
-      .attr(this.transitionAttr[0].coordAttr, (d, i) => this.transitionAttr[i].endCoord)
-      .attr(this.transitionAttr[0].dimensionAttr, (d, i) => this.transitionAttr[i].endDimension);
-
+   
     return this;
   }
 
@@ -1399,7 +1381,7 @@ class CCCCombinationChart extends Core {
     this.parts[`line_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `line-${this.indicator}`)
+      .attr("class", `line-${this.stat}`)
       .attr("width", this.width)
       .append("path")
       .attr("d", this.lineFunc(this.data))
@@ -1416,14 +1398,35 @@ class CCCCombinationChart extends Core {
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       );
 
-    let line = d3.select(`${this.selector} svg .line-${this.stat} path`);
-    let length = line._groups[0][0].getTotalLength();
-    line
-      .attr("stroke-dasharray", length)
-      .attr("stroke-dashoffset", length)
+      //add to transitionattributes array
+
+      this.transitionAttr = []
+      length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength()
+      for (let i = 0 ; i < this.parts[`line_${this.stat}`]._groups[0].length; i++){
+          let obj = new Object
+          this.transitionAttr.push(obj)
+          this.transitionAttr[i].part = `line_${this.stat}`
+          this.transitionAttr[i].attr_1 = 'stroke-dashoffset'
+          this.transitionAttr[i].attr_2 = 'stroke-dasharray'
+          this.transitionAttr[i].startAttr_1 = length
+          this.transitionAttr[i].endAttr_1 = 0
+          this.transitionAttr[i].startAttr_2 = length
+          this.transitionAttr[i].endAttr_2 = length
+      }
+
+    return this;
+  }
+
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {   
+    this.parts[`${this.transitionAttr[0].part}`]
+      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].startAttr_1 !== undefined ? this.transitionAttr[i].startAttr_1 : null)
+      .attr(this.transitionAttr[0].attr_2, (d, i) => this.transitionAttr[i].startAttr_2 !== undefined ? this.transitionAttr[i].startAttr_2 : null)
       .transition()
-      .duration(500)
-      .attr("stroke-dashoffset", 0);
+      .delay(delay)
+      .duration(duration)
+      .ease(ease)
+      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].endAttr_1 !== undefined ? this.transitionAttr[i].endAttr_1 : null)
+      .attr(this.transitionAttr[0].attr_2, (d, i) =>this.transitionAttr[i].endAttr_2 !== undefined ? this.transitionAttr[i].endAttr_2 : null);
 
     return this;
   }
