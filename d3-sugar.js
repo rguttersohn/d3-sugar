@@ -195,7 +195,7 @@ class Core {
   }
 }
 
-class CCCVerticalBarChart extends Core {
+class VerticalBarChart extends Core {
   constructor(selector) {
     super(selector);
   }
@@ -503,7 +503,7 @@ class CCCVerticalBarChart extends Core {
   }
 }
 
-class CCCHorizontalBarChart extends Core {
+class HorizontalBarChart extends Core {
   constructor(selector) {
     super(selector);
   }
@@ -814,7 +814,7 @@ class CCCHorizontalBarChart extends Core {
   }
 }
 
-class CCCPieChart extends Core {
+class PieChart extends Core {
   constructor(selector, colors) {
     super(selector, colors);
   }
@@ -978,7 +978,7 @@ class CCCPieChart extends Core {
   }
 }
 
-class CCCLineChart extends Core {
+class LineChart extends Core {
   constructor(selector) {
     super(selector);
   }
@@ -1235,7 +1235,7 @@ class CCCLineChart extends Core {
   }
 }
 
-class CCCCombinationChart extends Core {
+class CombinationChart extends Core {
   constructor(selector) {
     super(selector);
     this.transitionAttr = [];
@@ -1293,7 +1293,7 @@ class CCCCombinationChart extends Core {
     this.parts[`bars_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", "bars")
+      .attr("class", `bars-${this.stat}`)
       .attr("width", this.width)
       .selectAll("rect")
       .data(this.data)
@@ -1469,19 +1469,7 @@ class CCCCombinationChart extends Core {
       })
       .attr("stroke", stroke)
       .attr("strokeWidth", strokeWidth)
-      .attr("cy", (d) => {
-        if (this.min >= 0) {
-          return this.scaleLinearVertical(d[`${this.stat}`]);
-        } else {
-          if (d[`${this.stat}`] < 0) {
-            return (
-              this.height -
-              this.scaleLinearVertical(Math.abs(d[`${this.stat}`]))
-            );
-          }
-          return this.scaleLinearVertical(d[`${this.stat}`]);
-        }
-      });
+      .attr("cy", (d) => this.scaleLinearVertical(d[`${this.stat}`]));
 
     if (this.min < 0) {
       this.parts.svg
@@ -1589,41 +1577,6 @@ class CCCCombinationChart extends Core {
     return this;
   }
 
-  addDots(
-    color = "black",
-    { r = 5, width, translateX = 0, translateY = 0 } = {}
-  ) {
-    if (this.width !== 0 || this.height !== 0) {
-      !width ? (width = this.width) : (this.width = width);
-      this.parts[`dots_${this.stat}`] = d3
-        .select(`${this.selector} svg`)
-        .append("g")
-        .attr("class", `dots-${this.stat}`)
-        .attr("width", this.width)
-        .selectAll("circle")
-        .data(this.data)
-        .enter()
-        .append("circle")
-        .attr("cx", (d) => {
-          return (
-            this.scaleBandHorizontal(d[`${this.indicator}`]) +
-            this.scaleBandHorizontal.bandwidth() / 2
-          );
-        })
-        .attr("cy", (d) => {
-          return this.scaleLinearVertical(d[this.stat]);
-        })
-        .attr("r", r)
-        .attr(
-          "transform",
-          `translate(${this.margin + translateX},${
-            this.margin / 2 + translateY
-          })`
-        )
-        .attr("fill", color);
-      return this;
-    }
-  }
 
   addXAxis({
     tickSizeOuter = 0,
@@ -1837,9 +1790,9 @@ class CCCCombinationChart extends Core {
 
 // exports
 export {
-  CCCVerticalBarChart,
-  CCCHorizontalBarChart,
-  CCCPieChart,
-  CCCLineChart,
-  CCCCombinationChart,
+  VerticalBarChart,
+  HorizontalBarChart,
+  PieChart,
+  LineChart,
+  CombinationChart,
 };
