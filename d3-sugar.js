@@ -1417,19 +1417,6 @@ class CCCCombinationChart extends Core {
     return this;
   }
 
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {   
-    this.parts[`${this.transitionAttr[0].part}`]
-      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].startAttr_1 !== undefined ? this.transitionAttr[i].startAttr_1 : null)
-      .attr(this.transitionAttr[0].attr_2, (d, i) => this.transitionAttr[i].startAttr_2 !== undefined ? this.transitionAttr[i].startAttr_2 : null)
-      .transition()
-      .delay(delay)
-      .duration(duration)
-      .ease(ease)
-      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].endAttr_1 !== undefined ? this.transitionAttr[i].endAttr_1 : null)
-      .attr(this.transitionAttr[0].attr_2, (d, i) =>this.transitionAttr[i].endAttr_2 !== undefined ? this.transitionAttr[i].endAttr_2 : null);
-
-    return this;
-  }
 
   addPlotPoints(
     color,
@@ -1454,10 +1441,92 @@ class CCCCombinationChart extends Core {
       this.legend.push(obj);
     }
 
-    this.parts[`points_${this.stat}`] = d3
+    
+      this.parts[`points_${this.stat}`] = this.parts.svg
+      .append("g")
+      .attr("class", `points-${this.stat}`)
+      .attr("width", this.width)
+      .selectAll("circle")
+      .data(this.data)
+      .enter()
+      .append("circle")
+      .attr(
+        "cx",
+        (d) =>
+          this.scaleBandHorizontal(d[`${this.indicator}`]) * spreadX +
+          this.scaleBandHorizontal.bandwidth() / 2
+      )
+      .attr("r", r)
+      .attr(
+        "transform",
+        `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
+      )
+      .style("opacity", opacity)
+      .attr("fill", (d, i) => {
+        if (typeof color === "string") {
+          return color;
+        }
+      })
+      .attr("stroke", stroke)
+      .attr("strokeWidth", strokeWidth)
+      .attr("cy", (d) => {
+        if (this.min >= 0) {
+          return this.scaleLinearVertical(d[`${this.stat}`]);
+        } else {
+          if (d[`${this.stat}`] < 0) {
+            return (
+              this.height -
+              this.scaleLinearVertical(Math.abs(d[`${this.stat}`]))
+            );
+          }
+          return this.scaleLinearVertical(d[`${this.stat}`]);
+        }
+      });
+
+    if (this.min < 0) {
+      this.parts.svg
+        .append("g")
+        .attr("class", "dividing-line")
+        .append("line")
+        .attr("x1", this.margin)
+        .attr("x2", this.margin + this.wrapperWidth)
+        .attr("y1", this.scaleLinearVertical(0) + this.margin / 2)
+        .attr("y2", this.scaleLinearVertical(0) + this.margin / 2)
+        .style("stroke", "lightgray")
+        .style("stroke-width", "1px");
+    }
+
+    // add to transition object 
+    this.transitionAttr = []
+    for (let i = 0 ; i < this.parts[`points_${this.stat}`]._groups[0].length; i++){
+        let obj = new Object
+        this.transitionAttr.push(obj)
+        this.transitionAttr[i].part = `points_${this.stat}`
+        this.transitionAttr[i].attr_1 = 'cy'
+        this.transitionAttr[i].startAttr_1 = this.scaleLinearVertical(0)
+        this.transitionAttr[i].endAttr_1 = this.parts[`points_${this.stat}`]._groups[0][i].getAttribute('cy')
+    }
+  
+
+    return this;
+  }
+
+  addGuides({
+    width,
+    padding = 0.2,
+    translateX = 0,
+    translateY = 0,
+    spreadX = 1,
+    stroke = 'gray',
+    strokeWidth = 1,}={}){
+
+      this.padding = padding;
+      !width ? (width = this.width) : (this.width = width);
+
+    this.parts[`guides_${this.stat}`] =  d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", "plot-point-lines")
+      .attr("class", `guides-${this.stat}`)
       .selectAll("line")
       .data(this.data)
       .enter()
@@ -1474,17 +1543,13 @@ class CCCCombinationChart extends Core {
           this.scaleBandHorizontal(d[`${this.indicator}`]) * spreadX +
           this.scaleBandHorizontal.bandwidth() / 2
       )
-      .attr("stroke-width", "1px")
-      .attr("stroke", "gray")
+      .attr("stroke-width", strokeWidth)
+      .attr("stroke", stroke)
       .attr("stroke-dasharray", 3)
       .attr(
         "transform",
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       )
-      .attr("y1", this.scaleLinearVertical(0))
-      .attr("y2", this.scaleLinearVertical(0))
-      .transition()
-      .duration(300)
       .attr("y1", (d) => this.scaleLinearVertical(d[`${this.stat}`]))
       .attr("y2", () => {
         if (this.min >= 0) {
@@ -1494,62 +1559,33 @@ class CCCCombinationChart extends Core {
         }
       });
 
-    this.parts.svg
-      .append("g")
-      .attr("class", `points-${this.stat}`)
-      .attr("width", this.width)
-      .selectAll("circle")
-      .data(this.data)
-      .enter()
-      .append("circle")
-      .attr(
-        "cx",
-        (d) =>
-          this.scaleBandHorizontal(d[`${this.indicator}`]) * spreadX +
-          this.scaleBandHorizontal.bandwidth() / 2
-      )
-      .attr("cy", this.scaleLinearVertical(0))
-      .attr("r", r)
-      .attr(
-        "transform",
-        `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
-      )
-      .style("opacity", opacity)
-      .attr("fill", (d, i) => {
-        if (typeof color === "string") {
-          return color;
-        }
-      })
-      .attr("stroke", stroke)
-      .attr("strokeWidth", strokeWidth)
-      .transition()
-      .duration(300)
-      .attr("cy", (d) => {
-        if (this.min >= 0) {
-          return this.scaleLinearVertical(d[`${this.stat}`]);
-        } else {
-          if (d[`${this.stat}`] < 0) {
-            return (
-              this.height -
-              this.scaleLinearVertical(Math.abs(d[`${this.stat}`]))
-            );
-          }
-          return this.scaleLinearVertical(d[`${this.stat}`]);
-        }
-      });
+      // push to transtion attributes array 
 
-    if (this.min < 0) {
-      d3.select(`${this.selector} svg`)
-        .append("g")
-        .attr("class", "dividing-line")
-        .append("line")
-        .attr("x1", this.margin)
-        .attr("x2", this.margin + this.wrapperWidth)
-        .attr("y1", this.scaleLinearVertical(0) + this.margin / 2)
-        .attr("y2", this.scaleLinearVertical(0) + this.margin / 2)
-        .style("stroke", "lightgray")
-        .style("stroke-width", "1px");
+    this.transitionAttr = []
+    for (let i = 0 ; i < this.parts[`guides_${this.stat}`]._groups[0].length; i++){
+      let obj = new Object
+      this.transitionAttr.push(obj)
+      this.transitionAttr[i].part = `guides_${this.stat}`
+      this.transitionAttr[i].attr_2 = 'y1'
+      this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0)
+      this.transitionAttr[i].endAttr_2 = this.parts[`guides_${this.stat}`]._groups[0][i].getAttribute('y1')
+    
     }
+      return this;
+  }
+
+
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {   
+    this.parts[`${this.transitionAttr[0].part}`]
+      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].startAttr_1 !== undefined ? this.transitionAttr[i].startAttr_1 : null)
+      .attr(this.transitionAttr[0].attr_2, (d, i) => this.transitionAttr[i].startAttr_2 !== undefined ? this.transitionAttr[i].startAttr_2 : null)
+      .transition()
+      .delay(delay)
+      .duration(duration)
+      .ease(ease)
+      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].endAttr_1 !== undefined ? this.transitionAttr[i].endAttr_1 : null)
+      .attr(this.transitionAttr[0].attr_2, (d, i) =>this.transitionAttr[i].endAttr_2 !== undefined ? this.transitionAttr[i].endAttr_2 : null);
+
     return this;
   }
 
