@@ -225,7 +225,7 @@ class VerticalBarChart extends Core {
     }
   }
 
-  addBars({ padding = 0.2, opacity = 1 } = {}) {
+  addBars({ padding = 0.2, opacity = 1, color = ["black"] } = {}) {
     this.padding = padding;
     this.parts.bars = this.parts.svg
       .append("g")
@@ -257,6 +257,15 @@ class VerticalBarChart extends Core {
             this.scaleLinearVertical(Math.abs(d[`${this.stat}`]))
           );
         }
+      })
+      .attr("fill", (d, i) => {
+        if (Array.isArray(color)) {
+          if (color.length === 1) {
+            return color[0];
+          } else {
+            return color[i];
+          }
+        }
       });
 
     if (this.min < 0) {
@@ -270,6 +279,16 @@ class VerticalBarChart extends Core {
         .attr("y2", this.scaleLinearVertical(0) + this.margin / 2)
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
+    }
+
+    // add to legend object
+    for (let i = 0; i < this.legend.length; i++) {
+      if (color.length > 1) {
+        console.log("true");
+        this.legend[i].color = color[i];
+      } else if (color.length === 1) {
+        this.legend[i].color = color[0];
+      }
     }
 
     return this;
@@ -482,25 +501,6 @@ class VerticalBarChart extends Core {
       return this;
     }
   }
-
-  addColors(colorSet) {
-    for (let i = 0; i < colorSet.length; i++) {
-      this.legend[i].color = colorSet[i];
-    }
-    d3.selectAll(`${this.selector} svg .bars rect`)
-      .data(this.data)
-      .attr("fill", (d, i) => {
-        if (Array.isArray(colorSet)) {
-          if (colorSet.length === 1) {
-            return colorSet[0];
-          } else {
-            return this.legend[i].color;
-          }
-        }
-      });
-
-    return this;
-  }
 }
 
 class HorizontalBarChart extends Core {
@@ -533,7 +533,7 @@ class HorizontalBarChart extends Core {
     }
   }
 
-  addBars({ padding = 0.2, opacity = 1 } = {}) {
+  addBars({ padding = 0.2, opacity = 1, color = ["black"] } = {}) {
     this.padding = padding;
     this.parts.bars = d3
       .select(`${this.selector} svg`)
@@ -568,6 +568,15 @@ class HorizontalBarChart extends Core {
               this.scaleLinearHorizontal(0)
           );
         }
+      })
+      .attr("fill", (d, i) => {
+        if (Array.isArray(color)) {
+          if (color.length === 1) {
+            return color[0];
+          } else {
+            return color[i];
+          }
+        }
       });
 
     if (this.min < 0) {
@@ -582,6 +591,16 @@ class HorizontalBarChart extends Core {
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
+
+    // add to legend object
+    for (let i = 0; i < this.legend.length; i++) {
+      if (color.length > 1) {
+        this.legend[i].color = color[i];
+      } else if (color.length === 1) {
+        this.legend[i].color = color[0];
+      }
+    }
+
     return this;
   }
 
@@ -789,28 +808,8 @@ class HorizontalBarChart extends Core {
           }
         }
       }
-
       return this;
     }
-  }
-
-  addColors(colorSet) {
-    for (let i = 0; i < colorSet.length; i++) {
-      this.legend[i].color = colorSet[i];
-    }
-    d3.selectAll(`${this.selector} svg .bars rect`)
-      .data(this.data)
-      .attr("fill", (d, i) => {
-        if (Array.isArray(colorSet)) {
-          if (colorSet.length === 1) {
-            return colorSet[0];
-          } else {
-            return this.legend[i].color;
-          }
-        }
-      });
-
-    return this;
   }
 }
 
@@ -834,7 +833,14 @@ class PieChart extends Core {
       .padRadius(50);
   }
 
-  createChart({ width = 300, height = 300, data, indicator, stat } = {}) {
+  createChart({
+    width = 300,
+    height = 300,
+    data,
+    indicator,
+    stat,
+    color = ["black"],
+  } = {}) {
     !data ? (data = this.data) : (this.data = data);
     !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
     !stat ? (stat = this.stat) : (this.stat = stat);
@@ -848,8 +854,8 @@ class PieChart extends Core {
     if (width && height) {
       this.flatten;
       this.setParentDimension;
-      this.parts.svg = this.root.append("svg");
-      this.parts.svg
+      this.parts.svg = this.root
+        .append("svg")
         .attr("width", this.width + this.margin * 2)
         .attr("height", this.height + this.margin * 2)
         .append("g")
@@ -859,16 +865,40 @@ class PieChart extends Core {
           `translate(${this.width / 2 + this.margin},${
             this.height / 2 + this.margin
           })`
-        )
-        .selectAll("path")
-        .data(this.pie)
-        .enter()
-        .append("path")
-        .attr("stroke", "gray")
-        .attr("stroke-width", "lightgray")
-        .attr("d", this.arc);
+        );
       return this;
     }
+  }
+
+  addSlices({ color = ["black"] } = {}) {
+    this.parts.slices = this.parts.svg
+      .selectAll("path")
+      .data(this.pie)
+      .enter()
+      .append("path")
+      .attr("stroke", "gray")
+      .attr("stroke-width", "lightgray")
+      .attr("d", this.arc)
+      .attr("fill", (d, i) => {
+        if (Array.isArray(color)) {
+          if (color.length === 1) {
+            return color[0];
+          } else {
+            return color[i];
+          }
+        }
+      });
+
+    // add to legend object
+    for (let i = 0; i < this.legend.length; i++) {
+      if (color.length > 1) {
+        this.legend[i].color = color[i];
+      } else if (color.length === 1) {
+        this.legend[i].color = color[0];
+      }
+    }
+
+    return this;
   }
 
   addLabels({
@@ -954,25 +984,6 @@ class PieChart extends Core {
         }
       }
     }
-
-    return this;
-  }
-
-  addColors(colorSet) {
-    for (let i = 0; i < colorSet.length; i++) {
-      this.legend[i].color = colorSet[i];
-    }
-    d3.selectAll(`${this.selector} svg .pie-chart path`)
-      .data(this.data)
-      .attr("fill", (d, i) => {
-        if (Array.isArray(colorSet)) {
-          if (colorSet.length === 1) {
-            return colorSet[0];
-          } else {
-            return this.legend[i].color;
-          }
-        }
-      });
 
     return this;
   }
@@ -1270,25 +1281,22 @@ class CombinationChart extends Core {
     }
   }
 
-  addBars(
-    color,
-    {
-      width,
-      padding = 0.2,
-      opacity = 1,
-      translateX = 0,
-      translateY = 0,
-      spreadX = 1,
-    } = {}
-  ) {
+  addBars({
+    color = "black",
+    width,
+    padding = 0.2,
+    opacity = 1,
+    translateX = 0,
+    translateY = 0,
+    spreadX = 1,
+  } = {}) {
     this.padding = padding;
     !width ? (width = this.width) : (this.width = width);
-    if (color) {
-      let obj = {};
-      obj.color = color;
-      obj.indicator = this.stat;
-      this.legend.push(obj);
-    }
+    //add to legend
+    let obj = {};
+    obj.color = color;
+    obj.indicator = this.stat;
+    this.legend.push(obj);
 
     this.parts[`bars_${this.stat}`] = d3
       .select(`${this.selector} svg`)
@@ -1309,11 +1317,7 @@ class CombinationChart extends Core {
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       )
       .style("opacity", opacity)
-      .attr("fill", (d, i) => {
-        if (typeof color === "string") {
-          return color;
-        }
-      })
+      .attr("fill", (d, i) => color)
       .attr("y", (d) => {
         if (this.min >= 0) {
           return this.scaleLinearVertical(d[`${this.stat}`]);
@@ -1351,7 +1355,7 @@ class CombinationChart extends Core {
     }
 
     // adding transition elements to transitionAttr array
-    this.transitionAttr = []
+    this.transitionAttr = [];
     for (
       let i = 0;
       i < this.parts[`bars_${this.stat}`]._groups[0].length;
@@ -1359,20 +1363,23 @@ class CombinationChart extends Core {
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].part = `bars_${this.stat}`
+      this.transitionAttr[i].part = `bars_${this.stat}`;
       this.transitionAttr[i].attr_1 = "height";
       this.transitionAttr[i].startAttr_1 = 0;
-      this.transitionAttr[i].endAttr_1 = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('height'))
+      this.transitionAttr[i].endAttr_1 = parseFloat(
+        this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute("height")
+      );
       this.transitionAttr[i].attr_2 = "y";
       this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
-      this.transitionAttr[i].endAttr_2 = parseFloat(this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute('y')) 
-      
+      this.transitionAttr[i].endAttr_2 = parseFloat(
+        this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute("y")
+      );
     }
-   
+
     return this;
   }
 
-  addLine(color = "black", { width, translateX = 0, translateY = 0 } = {}) {
+  addLine({ color = "black", width, translateX = 0, translateY = 0 } = {}) {
     !width ? (width = this.width) : (this.width = width);
     let obj = {};
     obj.color = color;
@@ -1398,40 +1405,41 @@ class CombinationChart extends Core {
         `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
       );
 
-      //add to transitionattributes array
+    //add to transitionattributes array
 
-      this.transitionAttr = []
-      length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength()
-      for (let i = 0 ; i < this.parts[`line_${this.stat}`]._groups[0].length; i++){
-          let obj = new Object
-          this.transitionAttr.push(obj)
-          this.transitionAttr[i].part = `line_${this.stat}`
-          this.transitionAttr[i].attr_1 = 'stroke-dashoffset'
-          this.transitionAttr[i].attr_2 = 'stroke-dasharray'
-          this.transitionAttr[i].startAttr_1 = length
-          this.transitionAttr[i].endAttr_1 = 0
-          this.transitionAttr[i].startAttr_2 = length
-          this.transitionAttr[i].endAttr_2 = length
-      }
+    this.transitionAttr = [];
+    length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
+    for (
+      let i = 0;
+      i < this.parts[`line_${this.stat}`]._groups[0].length;
+      i++
+    ) {
+      let obj = new Object();
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].part = `line_${this.stat}`;
+      this.transitionAttr[i].attr_1 = "stroke-dashoffset";
+      this.transitionAttr[i].attr_2 = "stroke-dasharray";
+      this.transitionAttr[i].startAttr_1 = length;
+      this.transitionAttr[i].endAttr_1 = 0;
+      this.transitionAttr[i].startAttr_2 = length;
+      this.transitionAttr[i].endAttr_2 = length;
+    }
 
     return this;
   }
 
-
-  addPlotPoints(
-    color,
-    {
-      width,
-      padding = 0.2,
-      opacity = 1,
-      translateX = 0,
-      translateY = 0,
-      spreadX = 1,
-      r = 20,
-      stroke = null,
-      strokeWidth = 0,
-    } = {}
-  ) {
+  addPlotPoints({
+    color = "black",
+    width,
+    padding = 0.2,
+    opacity = 1,
+    translateX = 0,
+    translateY = 0,
+    spreadX = 1,
+    r = 20,
+    stroke = null,
+    strokeWidth = 0,
+  } = {}) {
     this.padding = padding;
     !width ? (width = this.width) : (this.width = width);
     if (color) {
@@ -1441,8 +1449,7 @@ class CombinationChart extends Core {
       this.legend.push(obj);
     }
 
-    
-      this.parts[`points_${this.stat}`] = this.parts.svg
+    this.parts[`points_${this.stat}`] = this.parts.svg
       .append("g")
       .attr("class", `points-${this.stat}`)
       .attr("width", this.width)
@@ -1484,17 +1491,22 @@ class CombinationChart extends Core {
         .style("stroke-width", "1px");
     }
 
-    // add to transition object 
-    this.transitionAttr = []
-    for (let i = 0 ; i < this.parts[`points_${this.stat}`]._groups[0].length; i++){
-        let obj = new Object
-        this.transitionAttr.push(obj)
-        this.transitionAttr[i].part = `points_${this.stat}`
-        this.transitionAttr[i].attr_1 = 'cy'
-        this.transitionAttr[i].startAttr_1 = this.scaleLinearVertical(0)
-        this.transitionAttr[i].endAttr_1 = this.parts[`points_${this.stat}`]._groups[0][i].getAttribute('cy')
+    // add to transition object
+    this.transitionAttr = [];
+    for (
+      let i = 0;
+      i < this.parts[`points_${this.stat}`]._groups[0].length;
+      i++
+    ) {
+      let obj = new Object();
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].part = `points_${this.stat}`;
+      this.transitionAttr[i].attr_1 = "cy";
+      this.transitionAttr[i].startAttr_1 = this.scaleLinearVertical(0);
+      this.transitionAttr[i].endAttr_1 = this.parts[
+        `points_${this.stat}`
+      ]._groups[0][i].getAttribute("cy");
     }
-  
 
     return this;
   }
@@ -1505,13 +1517,13 @@ class CombinationChart extends Core {
     translateX = 0,
     translateY = 0,
     spreadX = 1,
-    stroke = 'gray',
-    strokeWidth = 1,}={}){
+    stroke = "gray",
+    strokeWidth = 1,
+  } = {}) {
+    this.padding = padding;
+    !width ? (width = this.width) : (this.width = width);
 
-      this.padding = padding;
-      !width ? (width = this.width) : (this.width = width);
-
-    this.parts[`guides_${this.stat}`] =  d3
+    this.parts[`guides_${this.stat}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", `guides-${this.stat}`)
@@ -1547,36 +1559,55 @@ class CombinationChart extends Core {
         }
       });
 
-      // push to transtion attributes array 
+    // push to transtion attributes array
 
-    this.transitionAttr = []
-    for (let i = 0 ; i < this.parts[`guides_${this.stat}`]._groups[0].length; i++){
-      let obj = new Object
-      this.transitionAttr.push(obj)
-      this.transitionAttr[i].part = `guides_${this.stat}`
-      this.transitionAttr[i].attr_2 = 'y1'
-      this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0)
-      this.transitionAttr[i].endAttr_2 = this.parts[`guides_${this.stat}`]._groups[0][i].getAttribute('y1')
-    
+    this.transitionAttr = [];
+    for (
+      let i = 0;
+      i < this.parts[`guides_${this.stat}`]._groups[0].length;
+      i++
+    ) {
+      let obj = new Object();
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].part = `guides_${this.stat}`;
+      this.transitionAttr[i].attr_2 = "y1";
+      this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
+      this.transitionAttr[i].endAttr_2 = this.parts[
+        `guides_${this.stat}`
+      ]._groups[0][i].getAttribute("y1");
     }
-      return this;
+    return this;
   }
 
-
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {   
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
     this.parts[`${this.transitionAttr[0].part}`]
-      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].startAttr_1 !== undefined ? this.transitionAttr[i].startAttr_1 : null)
-      .attr(this.transitionAttr[0].attr_2, (d, i) => this.transitionAttr[i].startAttr_2 !== undefined ? this.transitionAttr[i].startAttr_2 : null)
+      .attr(this.transitionAttr[0].attr_1, (d, i) =>
+        this.transitionAttr[i].startAttr_1 !== undefined
+          ? this.transitionAttr[i].startAttr_1
+          : null
+      )
+      .attr(this.transitionAttr[0].attr_2, (d, i) =>
+        this.transitionAttr[i].startAttr_2 !== undefined
+          ? this.transitionAttr[i].startAttr_2
+          : null
+      )
       .transition()
       .delay(delay)
       .duration(duration)
       .ease(ease)
-      .attr(this.transitionAttr[0].attr_1, (d, i) => this.transitionAttr[i].endAttr_1 !== undefined ? this.transitionAttr[i].endAttr_1 : null)
-      .attr(this.transitionAttr[0].attr_2, (d, i) =>this.transitionAttr[i].endAttr_2 !== undefined ? this.transitionAttr[i].endAttr_2 : null);
+      .attr(this.transitionAttr[0].attr_1, (d, i) =>
+        this.transitionAttr[i].endAttr_1 !== undefined
+          ? this.transitionAttr[i].endAttr_1
+          : null
+      )
+      .attr(this.transitionAttr[0].attr_2, (d, i) =>
+        this.transitionAttr[i].endAttr_2 !== undefined
+          ? this.transitionAttr[i].endAttr_2
+          : null
+      );
 
     return this;
   }
-
 
   addXAxis({
     tickSizeOuter = 0,
