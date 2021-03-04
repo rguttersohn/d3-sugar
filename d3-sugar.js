@@ -12,6 +12,8 @@ class Core {
     this.legend = [];
     // holds the domain in valid dataset.
     this.domain = [];
+    // holds the html attributes that will be transitioned
+    this.transitionAttr = []
 
     // visual dimensions
     this.height = 0;
@@ -193,6 +195,38 @@ class Core {
       });
     return this;
   }
+
+  // adds a transition for certain elements in a visual
+  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
+    this.parts[`${this.transitionAttr[0].part}`]
+      .attr(this.transitionAttr[0].attr_1, (d, i) =>
+        this.transitionAttr[i].startAttr_1 !== undefined
+          ? this.transitionAttr[i].startAttr_1
+          : null
+      )
+      .attr(this.transitionAttr[0].attr_2, (d, i) =>
+        this.transitionAttr[i].startAttr_2 !== undefined
+          ? this.transitionAttr[i].startAttr_2
+          : null
+      )
+      .transition()
+      .delay(delay)
+      .duration(duration)
+      .ease(ease)
+      .attr(this.transitionAttr[0].attr_1, (d, i) =>
+        this.transitionAttr[i].endAttr_1 !== undefined
+          ? this.transitionAttr[i].endAttr_1
+          : null
+      )
+      .attr(this.transitionAttr[0].attr_2, (d, i) =>
+        this.transitionAttr[i].endAttr_2 !== undefined
+          ? this.transitionAttr[i].endAttr_2
+          : null
+      );
+
+    return this;
+  }
+  
 }
 
 class VerticalBarChart extends Core {
@@ -291,41 +325,27 @@ class VerticalBarChart extends Core {
       }
     }
 
-    return this;
-  }
-
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
-    this.parts.bars
-      .attr("height", () => {
-        return 0;
-      }) // always equal to 0
-      .attr("y", () => {
-        return this.scaleLinearVertical(0);
-      })
-      .transition()
-      .delay(delay)
-      .duration(duration)
-      .ease(ease)
-      .attr("y", (d) => {
-        if (this.min >= 0) {
-          return this.scaleLinearVertical(d[`${this.stat}`]);
-        } else {
-          if (d[`${this.stat}`] < 0) {
-            return this.scaleLinearVertical(0);
-          }
-          return this.scaleLinearVertical(d[`${this.stat}`]);
-        }
-      })
-      .attr("height", (d) => {
-        if (this.min >= 0) {
-          return this.height - this.scaleLinearVertical(d[`${this.stat}`]);
-        } else {
-          return (
-            this.scaleLinearVertical(0) -
-            this.scaleLinearVertical(Math.abs(d[`${this.stat}`]))
-          );
-        }
-      });
+    // adding transition elements to transitionAttr array
+    this.transitionAttr = [];
+    for (
+      let i = 0;
+      i < this.parts.bars._groups[0].length;
+      i++
+    ) {
+      let obj = new Object();
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].part = "bars";
+      this.transitionAttr[i].attr_1 = "height";
+      this.transitionAttr[i].startAttr_1 = 0;
+      this.transitionAttr[i].endAttr_1 = parseFloat(
+        this.parts.bars._groups[0][i].getAttribute("height")
+      );
+      this.transitionAttr[i].attr_2 = "y";
+      this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
+      this.transitionAttr[i].endAttr_2 = parseFloat(
+        this.parts.bars._groups[0][i].getAttribute("y")
+      );
+    }
     return this;
   }
 
@@ -604,42 +624,6 @@ class HorizontalBarChart extends Core {
     return this;
   }
 
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
-    this.parts.bars
-      .attr("width", 0)
-      .attr("x", (d) => {
-        if (this.min >= 0) {
-          return this.margin;
-        } else {
-          return this.scaleLinearHorizontal(0) + this.margin;
-        }
-      })
-      .transition()
-      .delay(delay)
-      .duration(duration)
-      .ease(ease)
-      .attr("width", (d) => {
-        if (this.min >= 0) {
-          return this.scaleLinearHorizontal(d[`${this.stat}`]);
-        } else {
-          return Math.abs(
-            this.scaleLinearHorizontal(d[`${this.stat}`]) -
-              this.scaleLinearHorizontal(0)
-          );
-        }
-      })
-      .attr("x", (d) => {
-        if (this.min >= 0) {
-          return this.margin;
-        } else {
-          if (d[`${this.stat}`] >= 0) {
-            return this.scaleLinearHorizontal(0) + this.margin;
-          } else {
-            return this.margin + this.scaleLinearHorizontal(d[`${this.stat}`]);
-          }
-        }
-      });
-  }
 
   addYAxis({
     tickSizeOuter = 0,
@@ -1579,35 +1563,7 @@ class CombinationChart extends Core {
     return this;
   }
 
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
-    this.parts[`${this.transitionAttr[0].part}`]
-      .attr(this.transitionAttr[0].attr_1, (d, i) =>
-        this.transitionAttr[i].startAttr_1 !== undefined
-          ? this.transitionAttr[i].startAttr_1
-          : null
-      )
-      .attr(this.transitionAttr[0].attr_2, (d, i) =>
-        this.transitionAttr[i].startAttr_2 !== undefined
-          ? this.transitionAttr[i].startAttr_2
-          : null
-      )
-      .transition()
-      .delay(delay)
-      .duration(duration)
-      .ease(ease)
-      .attr(this.transitionAttr[0].attr_1, (d, i) =>
-        this.transitionAttr[i].endAttr_1 !== undefined
-          ? this.transitionAttr[i].endAttr_1
-          : null
-      )
-      .attr(this.transitionAttr[0].attr_2, (d, i) =>
-        this.transitionAttr[i].endAttr_2 !== undefined
-          ? this.transitionAttr[i].endAttr_2
-          : null
-      );
 
-    return this;
-  }
 
   addXAxis({
     tickSizeOuter = 0,
