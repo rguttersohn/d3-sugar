@@ -1101,7 +1101,7 @@ class LineChart extends Core {
     return this;
   }
 
-  addLine(color = "black") {
+  addLine({color = "black"}={}) {
     let obj = {};
     obj.color = color;
     obj.indicator = this.indicator;
@@ -1117,22 +1117,29 @@ class LineChart extends Core {
       .attr("stroke-width", 2)
       .attr("fill", "none");
 
+        //add to transitionattributes array
+
+    this.transitionAttr = [];
+    length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
+    for (
+      let i = 0;
+      i < this.parts[`line_${this.stat}`]._groups[0].length;
+      i++
+    ) {
+      let obj = new Object();
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].part = `line_${this.stat}`;
+      this.transitionAttr[i].attr_1 = "stroke-dashoffset";
+      this.transitionAttr[i].attr_2 = "stroke-dasharray";
+      this.transitionAttr[i].startAttr_1 = length;
+      this.transitionAttr[i].endAttr_1 = 0;
+      this.transitionAttr[i].startAttr_2 = length;
+      this.transitionAttr[i].endAttr_2 = length;
+    }
+
     return this;
   }
 
-  addTransition({ duration = 300, ease = d3.easeCubic, delay = 0 } = {}) {
-    let length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
-    this.parts[`line_${this.stat}`]
-      .attr("stroke-dasharray", length)
-      .attr("stroke-dashoffset", length)
-      .transition()
-      .delay(delay)
-      .duration(duration)
-      .ease(ease)
-      .attr("stroke-dashoffset", 0);
-
-    return this;
-  }
 
   addLabels({
     stat,
@@ -1222,13 +1229,13 @@ class LineChart extends Core {
     }
   }
 
-  addDots(color = "black", { stat, r = 5 } = {}) {
+  addPlotPoints({color = "black", stat, r = 5 } = {}) {
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
-      this.parts[`dots_${this.stat}`] = d3
+      this.parts[`points_${this.stat}`] = d3
         .select(`${this.selector} svg`)
         .append("g")
-        .attr("class", `dots-${this.stat}`)
+        .attr("class", `points-${this.stat}`)
         .selectAll("circle")
         .data(this.data)
         .enter()
@@ -1410,7 +1417,6 @@ class CombinationChart extends Core {
       );
 
     //add to transitionattributes array
-
     this.transitionAttr = [];
     length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
     for (
