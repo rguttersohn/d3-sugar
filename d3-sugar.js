@@ -621,6 +621,26 @@ class HorizontalBarChart extends Core {
       }
     }
 
+    // add transition elements to transtionAttr array 
+
+    this.transtionAttr = []
+    for (
+      let i = 0;
+      i < this.parts.bars._groups[0].length;
+      i++
+    ){
+      let obj = new Object();
+      this.transitionAttr.push(obj)
+      this.transitionAttr[i].part = "bars"
+      this.transitionAttr[i].attr_1 = 'width'
+      this.transitionAttr[i].startAttr_1 = 0
+      this.transitionAttr[i].endAttr_1 = parseFloat(this.parts.bars._groups[0][i].getAttribute('width'))
+      this.transitionAttr[i].attr_2 = 'x'
+      this.transitionAttr[i].startAttr_2 = this.scaleLinearHorizontal(0) + this.margin
+      this.transitionAttr[i].endAttr_2 = parseFloat(this.parts.bars._groups[0][i].getAttribute('x'))
+    }
+    
+
     return this;
   }
 
