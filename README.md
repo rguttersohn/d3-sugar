@@ -53,9 +53,22 @@ const data = [
 
 ```
 
-1. Instantiate the class VerticalBarChart. The single argument required for the constructor will be the selector for the roo HTML element. In this example, our root will have the ID if *bar-chart* _Note: No need to add an SVG tag in your HTML. That will be rendered for you._
+1. Instantiate the class VerticalBarChart. The single argument required for the constructor will be the selector for the root HTML element. In this example, our root will have the ID if **bar-chart** _Note: No need to add an SVG tag in your HTML. That will be rendered for you._
+
+```
+let barChart = new VerticalBarChart("#bar-chart")
 
 ```
 
+ D3-Sugar was designed with D3.JS in mind. From here, we write a series of methods that have included some encapsulated native-D3.JS code. 
 
+ The first method we'll run is **barChart.createChart**. Here we'll set up some basic info including binding our data with the correct dataset, indicator and stat.
+
+```
+let barChart = new VerticalBarChart("#bar-chart")
+  .createChart({
+    data: data,
+    indicator: "year",
+    stat: 'value',
+  })
 ```
