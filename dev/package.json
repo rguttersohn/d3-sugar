@@ -1,0 +1,17 @@
+{
+  "name": "d3-sugar",
+  "version": "1.0.0",
+  "description": "D3 helper designed to quickly make basic data visuals.",
+  "main": "d3-sugar.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "d3",
+    "d3-sugar",
+    "data",
+    "visual"
+  ],
+  "author": "Robert Guttersohn",
+  "license": "MIT"
+}
