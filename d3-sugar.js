@@ -827,7 +827,7 @@ class PieChart extends Core {
     return d3.pie().value((d) => d[`${this.stat}`])(this.data);
   }
 
-  //local methods
+
   get arc() {
     return d3
       .arc()
@@ -882,7 +882,6 @@ class PieChart extends Core {
       .append("path")
       .attr("stroke", "gray")
       .attr("stroke-width", "lightgray")
-      .attr("d", this.arc)
       .attr("fill", (d, i) => {
         if (Array.isArray(color)) {
           if (color.length === 1) {
@@ -891,7 +890,8 @@ class PieChart extends Core {
             return color[i];
           }
         }
-      });
+      })      
+      .attr("d",this.arc);
 
     // add to legend object
     for (let i = 0; i < this.legend.length; i++) {
@@ -900,8 +900,16 @@ class PieChart extends Core {
       } else if (color.length === 1) {
         this.legend[i].color = color[0];
       }
+      return this
     }
 
+    // add elements to transtion attribute array
+
+    this.transitionAttr = []
+    for (let i = 0;i < this.parts.slices._groups[0].length;i++){
+      let obj = new Object
+      this.transitionAttr.push(obj)
+    }
     return this;
   }
 
