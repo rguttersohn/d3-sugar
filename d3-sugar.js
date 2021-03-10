@@ -318,7 +318,6 @@ class VerticalBarChart extends Core {
     // add to legend object
     for (let i = 0; i < this.legend.length; i++) {
       if (color.length > 1) {
-        console.log("true");
         this.legend[i].color = color[i];
       } else if (color.length === 1) {
         this.legend[i].color = color[0];

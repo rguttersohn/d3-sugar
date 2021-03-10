@@ -69,6 +69,50 @@ let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
     indicator: "year",
-    stat: 'value',
+    stat: 'value'
   })
 ```
+
+The D3-Sugar vertical bar charts by default have width of 300 and height of 400. You can change that default setting using the .createChart method. Below, we'll make our visual a little wider.
+
+```
+let barChart = new VerticalBarChart("#bar-chart")
+  .createChart({
+    data: data,
+    indicator: "year",
+    stat: 'value',
+    width: 400
+  })
+```
+
+Next we'll add the .addBars to ... well ... add our bars. 
+
+```
+let barChart = new VerticalBarChart("#bar-chart")
+  .createChart({
+    data: data,
+    indicator: "year",
+    stat: 'value',
+    width: 400
+  })
+  .addBars()
+```
+
+At this point, you should see four bars with black fills. Add colors by using the **color** option built into the .addBars method: 
+
+```
+let barChart = new VerticalBarChart("#bar-chart")
+  .createChart({
+    data: data,
+    indicator: "year",
+    stat: 'value',
+    width: 400
+  })
+  .addBars({
+    color:["#0099cd","#75b1d4","#afc9db","#e2e2e2"]
+  })
+```
+
+
+
+
