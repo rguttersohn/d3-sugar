@@ -32,7 +32,7 @@ Let's go over an easy example by making an animated vertical bar chart.
 We'll use the below dataset for this example:
 
 ```
-const dataTwo = [
+const data = [
   {
     year: "2001",
     value: 33,
@@ -53,9 +53,9 @@ const dataTwo = [
 
 ```
 
-1. Instantiate the class VerticalBarChart
-
+1. Instantiate the class VerticalBarChart. The single argument required for the constructor will be the selector for the roo HTML element. In this example, our root will have the ID if *bar-chart* _Note: No need to add an SVG tag in your HTML. That will be rendered for you._
 
 ```
+
 
 ```
