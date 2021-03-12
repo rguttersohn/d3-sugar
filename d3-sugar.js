@@ -1781,6 +1781,7 @@ class CombinationChart extends Core {
 }
 
 // exports
+module.exports.Core = Core;
 module.exports.VerticalBarChart = VerticalBarChart;
 module.exports.HorizontalBarChart = HorizontalBarChart;
 module.exports.PieChart = PieChart;
