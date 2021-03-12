@@ -1781,10 +1781,9 @@ class CombinationChart extends Core {
 }
 
 // exports
-export {
-  VerticalBarChart,
-  HorizontalBarChart,
-  PieChart,
-  LineChart,
-  CombinationChart,
-};
+module.exports.VerticalBarChart = VerticalBarChart;
+module.exports.HorizontalBarChart = HorizontalBarChart;
+module.exports.PieChart = PieChart;
+module.exports.LineChart = LineChart;
+module.exports.CombinationChart = CombinationChart;
+
