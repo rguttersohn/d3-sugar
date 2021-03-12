@@ -13,7 +13,7 @@ class Core {
     // holds the domain in valid dataset.
     this.domain = [];
     // holds the html attributes that will be transitioned
-    this.transitionAttr = []
+    this.transitionAttr = [];
 
     // visual dimensions
     this.height = 0;
@@ -25,12 +25,6 @@ class Core {
   //getters
   get root() {
     return d3.select(this.selector);
-  }
-
-  get setParentDimension() {
-    return this.root
-      .style("width", this.width + this.margin + "px")
-      .style("margin-top", "50px");
   }
 
   //number and  text formatting
@@ -145,7 +139,7 @@ class Core {
     this.root.insert("h3", "svg");
     d3.select(`${this.selector} h3`)
       .style("text-align", "center")
-      .style("width", this.wrapperWidth + this.margin * 2 + "px")
+      .style("width", "100%")
       .text(() => {
         if (headerText) {
           return headerText;
@@ -161,7 +155,7 @@ class Core {
       .attr("class", "legend")
       .style("margin", "auto")
       .style("display", "flex")
-      .style("width", this.wrapperWidth + this.margin * 2 + "px")
+      .style("width", "100%")
       .style("justify-content", "space-evenly")
       .style("align-items", "flex-start")
       .selectAll("div")
@@ -226,7 +220,6 @@ class Core {
 
     return this;
   }
-  
 }
 
 class VerticalBarChart extends Core {
@@ -249,12 +242,11 @@ class VerticalBarChart extends Core {
     this.height = height;
     if (width && height) {
       this.flatten;
-      this.setParentDimension;
       this.parts.svg = this.root.append("svg");
-
-      this.parts.svg
-        .attr("width", this.width + this.margin * 2)
-        .attr("height", this.height + this.margin);
+      this.parts.svg.attr(
+        "viewBox",
+        `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+      );
       return this;
     }
   }
@@ -326,11 +318,7 @@ class VerticalBarChart extends Core {
 
     // adding transition elements to transitionAttr array
     this.transitionAttr = [];
-    for (
-      let i = 0;
-      i < this.parts.bars._groups[0].length;
-      i++
-    ) {
+    for (let i = 0; i < this.parts.bars._groups[0].length; i++) {
       let obj = new Object();
       this.transitionAttr.push(obj);
       this.transitionAttr[i].part = "bars";
@@ -541,11 +529,13 @@ class HorizontalBarChart extends Core {
     this.height = height;
     if (width && height) {
       this.flatten;
-      this.setParentDimension;
-      this.parts.svg = this.root.append("svg");
-      this.parts.svg
-        .attr("width", this.width + this.margin * 2)
-        .attr("height", this.height + this.margin)
+
+      this.parts.svg = this.root
+        .append("svg")
+        .attr(
+          "viewBox",
+          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+        )
         .append("g")
         .attr("class", "bars");
       return this;
@@ -620,29 +610,28 @@ class HorizontalBarChart extends Core {
       }
     }
 
-    // add transition elements to transtionAttr array 
+    // add transition elements to transtionAttr array
 
-    this.transtionAttr = []
-    for (
-      let i = 0;
-      i < this.parts.bars._groups[0].length;
-      i++
-    ){
+    this.transtionAttr = [];
+    for (let i = 0; i < this.parts.bars._groups[0].length; i++) {
       let obj = new Object();
-      this.transitionAttr.push(obj)
-      this.transitionAttr[i].part = "bars"
-      this.transitionAttr[i].attr_1 = 'width'
-      this.transitionAttr[i].startAttr_1 = 0
-      this.transitionAttr[i].endAttr_1 = parseFloat(this.parts.bars._groups[0][i].getAttribute('width'))
-      this.transitionAttr[i].attr_2 = 'x'
-      this.transitionAttr[i].startAttr_2 = this.scaleLinearHorizontal(0) + this.margin
-      this.transitionAttr[i].endAttr_2 = parseFloat(this.parts.bars._groups[0][i].getAttribute('x'))
+      this.transitionAttr.push(obj);
+      this.transitionAttr[i].part = "bars";
+      this.transitionAttr[i].attr_1 = "width";
+      this.transitionAttr[i].startAttr_1 = 0;
+      this.transitionAttr[i].endAttr_1 = parseFloat(
+        this.parts.bars._groups[0][i].getAttribute("width")
+      );
+      this.transitionAttr[i].attr_2 = "x";
+      this.transitionAttr[i].startAttr_2 =
+        this.scaleLinearHorizontal(0) + this.margin;
+      this.transitionAttr[i].endAttr_2 = parseFloat(
+        this.parts.bars._groups[0][i].getAttribute("x")
+      );
     }
-    
 
     return this;
   }
-
 
   addYAxis({
     tickSizeOuter = 0,
@@ -856,11 +845,9 @@ class PieChart extends Core {
     this.wrapperWidth = width;
     if (width && height) {
       this.flatten;
-      this.setParentDimension;
       this.parts.svg = this.root
         .append("svg")
-        .attr("width", this.width + this.margin * 2)
-        .attr("height", this.height + this.margin * 2)
+        .attr("viewBox", `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`)
         .append("g")
         .attr("class", "pie-chart")
         .attr(
@@ -1008,11 +995,10 @@ class LineChart extends Core {
     this.height = height;
     if (width && height) {
       this.flatten;
-      this.setParentDimension;
+
       this.parts.svg = this.root.append("svg");
       this.parts.svg
-        .attr("width", this.width + this.margin)
-        .attr("height", this.height + this.margin + this.margin)
+      .attr("viewBox", `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`)
         .append("g");
       return this;
     }
@@ -1100,7 +1086,7 @@ class LineChart extends Core {
     return this;
   }
 
-  addLine({color = "black"}={}) {
+  addLine({ color = "black" } = {}) {
     let obj = {};
     obj.color = color;
     obj.indicator = this.indicator;
@@ -1116,7 +1102,7 @@ class LineChart extends Core {
       .attr("stroke-width", 2)
       .attr("fill", "none");
 
-        //add to transitionattributes array
+    //add to transitionattributes array
 
     this.transitionAttr = [];
     length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
@@ -1138,7 +1124,6 @@ class LineChart extends Core {
 
     return this;
   }
-
 
   addLabels({
     stat,
@@ -1228,7 +1213,7 @@ class LineChart extends Core {
     }
   }
 
-  addPlotPoints({color = "black", stat, r = 5 } = {}) {
+  addPlotPoints({ color = "black", stat, r = 5 } = {}) {
     !stat ? (stat = this.stat) : (this.stat = stat);
     if (this.width !== 0 || this.height !== 0) {
       this.parts[`points_${this.stat}`] = d3
@@ -1282,11 +1267,8 @@ class CombinationChart extends Core {
     this.height = height;
     if (width && height) {
       this.flatten;
-      this.setParentDimension;
-      this.parts.svg = this.root.append("svg");
-      this.parts.svg
-        .attr("width", this.width + this.margin * 2)
-        .attr("height", this.height + this.margin);
+      this.parts.svg = this.root.append("svg")
+      .attr("viewBox", `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`)
       return this;
     }
   }
@@ -1440,7 +1422,7 @@ class CombinationChart extends Core {
   addPlotPoints({
     color = "black",
     width,
-    padding = 0.2,
+    padding = 0,
     opacity = 1,
     translateX = 0,
     translateY = 0,
@@ -1470,7 +1452,7 @@ class CombinationChart extends Core {
         "cx",
         (d) =>
           this.scaleBandHorizontal(d[`${this.indicator}`]) * spreadX +
-          this.scaleBandHorizontal.bandwidth() / 2
+          this.scaleBandHorizontal.bandwidth()/2
       )
       .attr("r", r)
       .attr(
@@ -1587,8 +1569,6 @@ class CombinationChart extends Core {
     }
     return this;
   }
-
-
 
   addXAxis({
     tickSizeOuter = 0,
