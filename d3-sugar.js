@@ -1,3 +1,5 @@
+// let d3 = require('d3')
+
 class Core {
   constructor(selector) {
     this.selector = selector;
@@ -148,6 +150,7 @@ class Core {
     return this;
   }
 
+
   //adds legend. Renders legend based on objects in the legend array
   addLegend({ legendLabel } = {}) {
     this.root
@@ -219,6 +222,11 @@ class Core {
       );
 
     return this;
+  }
+
+  // adds a method converting spaces in a string to dashes
+  dashify(str){
+    return str.replace(/\s+/g, '-').toLowerCase();
   }
 }
 
@@ -1090,11 +1098,13 @@ class LineChart extends Core {
     let obj = {};
     obj.color = color;
     obj.indicator = this.indicator;
+    // core method removing spaces from stat keys
+    const uniqueName = this.dashify(this.stat)
     this.legend.push(obj);
-    this.parts[`line_${this.stat}`] = d3
+    this.parts[`line_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `line-${this.indicator}`)
+      .attr("class", `line-${uniqueName}`)
       .append("path")
       .attr("d", this.lineFunc(this.data))
       .attr("transform", `translate(${this.margin},${this.margin})`)
@@ -1105,15 +1115,15 @@ class LineChart extends Core {
     //add to transitionattributes array
 
     this.transitionAttr = [];
-    length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
+    length = this.parts[`line_${uniqueName}`]._groups[0][0].getTotalLength();
     for (
       let i = 0;
-      i < this.parts[`line_${this.stat}`]._groups[0].length;
+      i < this.parts[`line_${uniqueName}`]._groups[0].length;
       i++
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].part = `line_${this.stat}`;
+      this.transitionAttr[i].part = `line_${uniqueName}`;
       this.transitionAttr[i].attr_1 = "stroke-dashoffset";
       this.transitionAttr[i].attr_2 = "stroke-dasharray";
       this.transitionAttr[i].startAttr_1 = length;
@@ -1126,7 +1136,6 @@ class LineChart extends Core {
   }
 
   addLabels({
-    stat,
     formatPunctuation = "commaSeparate",
     dx = 0,
     dy = 0,
@@ -1135,12 +1144,12 @@ class LineChart extends Core {
     fontSize = null,
     show = false,
   } = {}) {
-    !stat ? (stat = this.stat) : (this.stat = stat);
+   const uniqueName = this.dashify(this.stat)
     if (this.width !== 0 || this.height !== 0) {
-      this.parts[`labels_${this.stat}`] = d3
+      this.parts[`labels_${uniqueName}`] = d3
         .select(this.selector + " svg")
         .append("g")
-        .attr("class", `labels-${this.stat}`)
+        .attr("class", `labels-${uniqueName}`)
         .selectAll("text")
         .data(this.data)
         .enter()
@@ -1193,7 +1202,7 @@ class LineChart extends Core {
 
       if (formatPunctuation) {
         let labels = document.querySelectorAll(
-          `${this.selector} svg .labels-${this.indicator} text`
+          `${this.selector} svg .labels-${uniqueName} text`
         );
         for (let label of labels) {
           if (label.textContent) {
@@ -1213,13 +1222,13 @@ class LineChart extends Core {
     }
   }
 
-  addPlotPoints({ color = "black", stat, r = 5 } = {}) {
-    !stat ? (stat = this.stat) : (this.stat = stat);
+  addPlotPoints({ color = "black", r = 5 } = {}) {
+    const uniqueName = this.dashify(this.stat)
     if (this.width !== 0 || this.height !== 0) {
-      this.parts[`points_${this.stat}`] = d3
+      this.parts[`points_${uniqueName}`] = d3
         .select(`${this.selector} svg`)
         .append("g")
-        .attr("class", `points-${this.stat}`)
+        .attr("class", `points-${uniqueName}`)
         .selectAll("circle")
         .data(this.data)
         .enter()
@@ -1289,11 +1298,11 @@ class CombinationChart extends Core {
     obj.color = color;
     obj.indicator = this.stat;
     this.legend.push(obj);
-
-    this.parts[`bars_${this.stat}`] = d3
+    const uniqueName = this.dashify(this.stat)
+    this.parts[`bars_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `bars-${this.stat}`)
+      .attr("class", `bars-${uniqueName}`)
       .attr("width", this.width)
       .selectAll("rect")
       .data(this.data)
@@ -1350,21 +1359,21 @@ class CombinationChart extends Core {
     this.transitionAttr = [];
     for (
       let i = 0;
-      i < this.parts[`bars_${this.stat}`]._groups[0].length;
+      i < this.parts[`bars_${unqiueName}`]._groups[0].length;
       i++
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].part = `bars_${this.stat}`;
+      this.transitionAttr[i].part = `bars_${uniqueName}`;
       this.transitionAttr[i].attr_1 = "height";
       this.transitionAttr[i].startAttr_1 = 0;
       this.transitionAttr[i].endAttr_1 = parseFloat(
-        this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute("height")
+        this.parts[`bars_${uniqueName}`]._groups[0][i].getAttribute("height")
       );
       this.transitionAttr[i].attr_2 = "y";
       this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
       this.transitionAttr[i].endAttr_2 = parseFloat(
-        this.parts[`bars_${this.stat}`]._groups[0][i].getAttribute("y")
+        this.parts[`bars_${unqiueName}`]._groups[0][i].getAttribute("y")
       );
     }
 
@@ -1376,11 +1385,14 @@ class CombinationChart extends Core {
     let obj = {};
     obj.color = color;
     obj.indicator = this.stat;
+
+  const uniqueName = this.dashify(this.stat)
     this.legend.push(obj);
-    this.parts[`line_${this.stat}`] = d3
+
+    this.parts[`line_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `line-${this.stat}`)
+      .attr("class", `line-${uniqueName}`)
       .attr("width", this.width)
       .append("path")
       .attr("d", this.lineFunc(this.data))
@@ -1399,15 +1411,15 @@ class CombinationChart extends Core {
 
     //add to transitionattributes array
     this.transitionAttr = [];
-    length = this.parts[`line_${this.stat}`]._groups[0][0].getTotalLength();
+    length = this.parts[`line_${uniqueName}`]._groups[0][0].getTotalLength();
     for (
       let i = 0;
-      i < this.parts[`line_${this.stat}`]._groups[0].length;
+      i < this.parts[`line_${uniqueName}`]._groups[0].length;
       i++
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].part = `line_${this.stat}`;
+      this.transitionAttr[i].part = `line_${uniqueName}`;
       this.transitionAttr[i].attr_1 = "stroke-dashoffset";
       this.transitionAttr[i].attr_2 = "stroke-dasharray";
       this.transitionAttr[i].startAttr_1 = length;
@@ -1439,10 +1451,11 @@ class CombinationChart extends Core {
       obj.indicator = this.stat;
       this.legend.push(obj);
     }
+    const uniqueName = this.dashify(this.stat)
 
-    this.parts[`points_${this.stat}`] = this.parts.svg
+    this.parts[`points_${uniqueName}`] = this.parts.svg
       .append("g")
-      .attr("class", `points-${this.stat}`)
+      .attr("class", `points-${uniqueName}`)
       .attr("width", this.width)
       .selectAll("circle")
       .data(this.data)
@@ -1486,16 +1499,16 @@ class CombinationChart extends Core {
     this.transitionAttr = [];
     for (
       let i = 0;
-      i < this.parts[`points_${this.stat}`]._groups[0].length;
+      i < this.parts[`points_${uniqueName}`]._groups[0].length;
       i++
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].part = `points_${this.stat}`;
+      this.transitionAttr[i].part = `points_${uniqueName}`;
       this.transitionAttr[i].attr_1 = "cy";
       this.transitionAttr[i].startAttr_1 = this.scaleLinearVertical(0);
       this.transitionAttr[i].endAttr_1 = this.parts[
-        `points_${this.stat}`
+        `points_${uniqueName}`
       ]._groups[0][i].getAttribute("cy");
     }
 
@@ -1514,10 +1527,12 @@ class CombinationChart extends Core {
     this.padding = padding;
     !width ? (width = this.width) : (this.width = width);
 
-    this.parts[`guides_${this.stat}`] = d3
+    const uniqueName = this.dashify(this.stat)
+
+    this.parts[`guides_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
-      .attr("class", `guides-${this.stat}`)
+      .attr("class", `guides-${uniqueName}`)
       .selectAll("line")
       .data(this.data)
       .enter()
@@ -1555,16 +1570,16 @@ class CombinationChart extends Core {
     this.transitionAttr = [];
     for (
       let i = 0;
-      i < this.parts[`guides_${this.stat}`]._groups[0].length;
+      i < this.parts[`guides_${uniqueName}`]._groups[0].length;
       i++
     ) {
       let obj = new Object();
       this.transitionAttr.push(obj);
-      this.transitionAttr[i].part = `guides_${this.stat}`;
+      this.transitionAttr[i].part = `guides_${uniqueName}`;
       this.transitionAttr[i].attr_2 = "y1";
       this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
       this.transitionAttr[i].endAttr_2 = this.parts[
-        `guides_${this.stat}`
+        `guides_${uniqueName}`
       ]._groups[0][i].getAttribute("y1");
     }
     return this;
@@ -1577,12 +1592,13 @@ class CombinationChart extends Core {
     hideLine = false,
     axisLabels,
   } = {}) {
+    const uniqueName = this.dashify(this.indicator)
     if (this.width !== 0 || this.height !== 0) {
       this.xAxisIterator++;
-      this.parts[`xAxis_${this.indicator}`] = d3
+      this.parts[`xAxis_${uniqueName}`] = d3
         .select(this.selector + "  svg")
         .append("g")
-        .attr("class", `x-axis-${this.indicator}`)
+        .attr("class", `x-axis-${uniqueName}`)
         .attr(
           "transform",
           `translate(${this.margin},${this.height + this.margin / 2})`
@@ -1617,13 +1633,14 @@ class CombinationChart extends Core {
     axisLabel,
     orient = "left",
   } = {}) {
+    const uniqueName = this.dashify(this.stat)
     if (this.width !== 0 || this.height !== 0) {
       this.domain = [];
       this.flatten;
       if (orient === "left") {
-        this.parts[`yAxis_${this.stat}`] = this.parts.svg
+        this.parts[`yAxis_${uniqueName}`] = this.parts.svg
           .append("g")
-          .attr("class", `y-axis-${this.stat}`)
+          .attr("class", `y-axis-${uniqueName}`)
           .attr("transform", `translate(${this.margin},${this.margin / 2})`)
           .call(
             d3
@@ -1645,9 +1662,9 @@ class CombinationChart extends Core {
               .tickPadding(tickPadding)
           );
       } else if (orient === "right") {
-        this.parts[`yAxis_${this.stat}`] = this.parts.svg
+        this.parts[`yAxis_${uniqueName}`] = this.parts.svg
           .append("g")
-          .attr("class", `y-axis-${this.stat}`)
+          .attr("class", `y-axis-${uniqueName}`)
           .attr(
             "transform",
             `translate(${this.margin + this.wrapperWidth},${this.margin / 2})`
@@ -1690,7 +1707,6 @@ class CombinationChart extends Core {
   }
 
   addLabels({
-    stat,
     indicator,
     formatPunctuation = "commaSeparate",
     dx = 0,
@@ -1700,12 +1716,12 @@ class CombinationChart extends Core {
     fontSize = null,
     show = false,
   } = {}) {
+    const uniqueName = this.dashify(this.stat)
     if (this.width !== 0 || this.height !== 0) {
-      !stat ? (stat = this.stat) : (this.stat = stat);
       !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
-      this.parts[`labels_${this.stat}`] = this.parts.svg
+      this.parts[`labels_${uniqueName}`] = this.parts.svg
         .append("g")
-        .attr("class", `labels-${this.indicator}`)
+        .attr("class", `labels-${uniqueName}`)
         .selectAll("text")
         .data(this.data)
         .enter()
@@ -1758,7 +1774,7 @@ class CombinationChart extends Core {
 
       if (formatPunctuation) {
         let labels = document.querySelectorAll(
-          `${this.selector} svg .labels-${this.indicator} text`
+          `${this.selector} svg .labels-${uniqueName} text`
         );
 
         for (let label of labels) {
@@ -1781,10 +1797,19 @@ class CombinationChart extends Core {
 }
 
 // exports
-module.exports.Core = Core;
-module.exports.VerticalBarChart = VerticalBarChart;
-module.exports.HorizontalBarChart = HorizontalBarChart;
-module.exports.PieChart = PieChart;
-module.exports.LineChart = LineChart;
-module.exports.CombinationChart = CombinationChart;
+// module.exports.Core = Core;
+// module.exports.VerticalBarChart = VerticalBarChart;
+// module.exports.HorizontalBarChart = HorizontalBarChart;
+// module.exports.PieChart = PieChart;
+// module.exports.LineChart = LineChart;
+// module.exports.CombinationChart = CombinationChart;
+
+export {
+  Core,
+  VerticalBarChart,
+  HorizontalBarChart,
+  PieChart,
+  LineChart,
+  CombinationChart
+}
 
