@@ -1,5 +1,5 @@
 
-//   let d3 = require('d3')
+  let d3 = require('d3')
 
 
 
@@ -1799,20 +1799,20 @@ class CombinationChart extends Core {
   }
 }
 
-// exports
-// module.exports.Core = Core;
-// module.exports.VerticalBarChart = VerticalBarChart;
-// module.exports.HorizontalBarChart = HorizontalBarChart;
-// module.exports.PieChart = PieChart;
-// module.exports.LineChart = LineChart;
-// module.exports.CombinationChart = CombinationChart;
+exports
+module.exports.Core = Core;
+module.exports.VerticalBarChart = VerticalBarChart;
+module.exports.HorizontalBarChart = HorizontalBarChart;
+module.exports.PieChart = PieChart;
+module.exports.LineChart = LineChart;
+module.exports.CombinationChart = CombinationChart;
 
-export {
-  Core,
-  VerticalBarChart,
-  HorizontalBarChart,
-  PieChart,
-  LineChart,
-  CombinationChart
-}
+// export {
+//   Core,
+//   VerticalBarChart,
+//   HorizontalBarChart,
+//   PieChart,
+//   LineChart,
+//   CombinationChart
+// }
 
