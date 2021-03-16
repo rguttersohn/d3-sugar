@@ -1641,9 +1641,9 @@ class CombinationChart extends Core {
       this.domain = [];
       this.flatten;
       if (orient === "left") {
-        this.parts[`yAxis_${uniqueName}`] = this.parts.svg
+        this.parts[`yAxis`] = this.parts.svg
           .append("g")
-          .attr("class", `y-axis-${uniqueName}`)
+          .attr("class", `y-axis`)
           .attr("transform", `translate(${this.margin},${this.margin / 2})`)
           .call(
             d3
@@ -1665,9 +1665,9 @@ class CombinationChart extends Core {
               .tickPadding(tickPadding)
           );
       } else if (orient === "right") {
-        this.parts[`yAxis_${uniqueName}`] = this.parts.svg
+        this.parts[`yAxis`] = this.parts.svg
           .append("g")
-          .attr("class", `y-axis-${uniqueName}`)
+          .attr("class", `y-axis`)
           .attr(
             "transform",
             `translate(${this.margin + this.wrapperWidth},${this.margin / 2})`
