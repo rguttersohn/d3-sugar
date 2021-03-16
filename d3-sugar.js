@@ -128,14 +128,14 @@ class Core {
     return d3
       .scaleLinear()
       .range([0, this.width])
-      .domain(this.min >= 0 ? [this.min - 5, this.max + 5] : [this.min - 5, this.max + 5]);
+      .domain(this.min > 0 || this.min < 0 ? [this.min - 5, this.max + 5] : [this.min, this.max + 5]);
   }
 
   get scaleLinearVertical() {
     return d3
       .scaleLinear()
       .range([this.height, 0])
-      .domain(this.min >= 0 ? [this.min - 5, this.max + 5] : [this.min - 5, this.max + 5]);
+      .domain(this.min > 0 || this.min < 0 ? [this.min - 5, this.max + 5] : [this.min, this.max + 5]);
   }
 
   //methods
