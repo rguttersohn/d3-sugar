@@ -1,4 +1,7 @@
-let d3 = require('d3')
+
+//   let d3 = require('d3')
+
+
 
 class Core {
   constructor(selector) {
@@ -125,14 +128,14 @@ class Core {
     return d3
       .scaleLinear()
       .range([0, this.width])
-      .domain(this.min >= 0 ? [0, this.max + 5] : [this.min - 5, this.max + 5]);
+      .domain(this.min >= 0 ? [this.min - 5, this.max + 5] : [this.min - 5, this.max + 5]);
   }
 
   get scaleLinearVertical() {
     return d3
       .scaleLinear()
       .range([this.height, 0])
-      .domain(this.min >= 0 ? [0, this.max + 5] : [this.min - 5, this.max + 5]);
+      .domain(this.min >= 0 ? [this.min - 5, this.max + 5] : [this.min - 5, this.max + 5]);
   }
 
   //methods
@@ -1796,20 +1799,20 @@ class CombinationChart extends Core {
   }
 }
 
-exports
-module.exports.Core = Core;
-module.exports.VerticalBarChart = VerticalBarChart;
-module.exports.HorizontalBarChart = HorizontalBarChart;
-module.exports.PieChart = PieChart;
-module.exports.LineChart = LineChart;
-module.exports.CombinationChart = CombinationChart;
+// exports
+// module.exports.Core = Core;
+// module.exports.VerticalBarChart = VerticalBarChart;
+// module.exports.HorizontalBarChart = HorizontalBarChart;
+// module.exports.PieChart = PieChart;
+// module.exports.LineChart = LineChart;
+// module.exports.CombinationChart = CombinationChart;
 
-// export {
-//   Core,
-//   VerticalBarChart,
-//   HorizontalBarChart,
-//   PieChart,
-//   LineChart,
-//   CombinationChart
-// }
+export {
+  Core,
+  VerticalBarChart,
+  HorizontalBarChart,
+  PieChart,
+  LineChart,
+  CombinationChart
+}
 
