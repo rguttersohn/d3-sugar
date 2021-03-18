@@ -23,6 +23,7 @@ class Core {
     this.margin = 50;
     this.padding = "";
     this.wrapperWidth = 0;
+    // adds padding to min and max
     this.domainPadding = 0;
   }
   //getters
@@ -1049,7 +1050,7 @@ class LineChart extends Core {
       .attr("class", "x-axis")
       .attr(
         "transform",
-        `translate(${this.margin},${this.height + this.margin})`
+        `translate(${this.margin},${this.height + this.margin/2})`
       )
       .call(
         d3
@@ -1083,7 +1084,7 @@ class LineChart extends Core {
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", "y-axis")
-      .attr("transform", `translate(${this.margin},${this.margin})`)
+      .attr("transform", `translate(${this.margin},${this.margin/2})`)
       .call(
         d3
           .axisLeft(this.scaleLinearVertical)
@@ -1131,7 +1132,7 @@ class LineChart extends Core {
       .attr("class", `line-${uniqueName}`)
       .append("path")
       .attr("d", this.lineFunc(this.data))
-      .attr("transform", `translate(${this.margin},${this.margin})`)
+      .attr("transform", `translate(${this.margin},${this.margin/2})`)
       .attr("stroke", color)
       .attr("stroke-width", 2)
       .attr("fill", "none");
@@ -1267,7 +1268,7 @@ class LineChart extends Core {
           return this.scaleLinearVertical(d[this.stat]);
         })
         .attr("r", r)
-        .attr("transform", `translate(${this.margin},${this.margin})`)
+        .attr("transform", `translate(${this.margin},${this.margin/2})`)
         .attr("fill", color);
       return this;
     }
@@ -1424,7 +1425,7 @@ class CombinationChart extends Core {
       .attr("width", this.width)
       .append("path")
       .attr("d", this.lineFunc(this.data))
-      .attr("transform", `translate(${this.margin},${this.margin})`)
+      .attr("transform", `translate(${this.margin},${this.margin/2})`)
       .attr("stroke", (d, i) => {
         if (typeof color === "string") {
           return color;
