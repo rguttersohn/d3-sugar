@@ -21,7 +21,7 @@ Each visual can be imported individually using destructing.
 
 Example: 
 
-```
+```javascript
 import { PieChart } from "../d3-sugar.js";
 ```
 
@@ -31,7 +31,7 @@ Let's go over an easy example by making an animated vertical bar chart.
 
 We'll use the below dataset for this example:
 
-```
+```javascript
 const data = [
   {
     year: "2001",
@@ -55,7 +55,7 @@ const data = [
 
 1. Instantiate the class VerticalBarChart. The single argument required for the constructor will be the selector for the root HTML element. In this example, our root will have the ID if **bar-chart** _Note: No need to add an SVG tag in your HTML. That will be rendered for you._
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
 
 ```
@@ -64,7 +64,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 
  The first method we'll run is **barChart.createChart**. Here we'll set up some basic info including binding our data with the correct dataset, indicator and stat.
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -75,7 +75,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 
 The D3-Sugar vertical bar charts by default have width of 300 and height of 400. You can change that default setting using the .createChart method. Below, we'll make our visual a little wider.
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -87,7 +87,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 
 Next we'll add the .addBars to ... well ... add our bars. 
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -100,7 +100,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 
 At this point, you should see four bars with black fills. Add colors by using the **color** array option built into the .addBars method: 
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -114,7 +114,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 ```
 We can also make other adjustments to the bars using some additional options. We'll add some additional space between the bars by using the padding option: 
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -129,7 +129,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 ```
 I guess now would be good time to add the axes. vertical bar chart comes with two methods to handle the axes: addYAxis and addXAxis.
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -146,7 +146,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 ```
 You should see a set of axes now. Notice the indicator names appearing in the x-axis. Out of the box these look OK. But I am going to add some additional options to make these more to my looking. 
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -172,7 +172,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 ```
 And now, let's add some labels. Note, I'll be using the formatPunctuation option on the labels - similar to our addYAxis method: 
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -202,7 +202,7 @@ let barChart = new VerticalBarChart("#bar-chart")
 
 Now let's add a transiton to the bars using the addTransiton method. We'll also set the options **duration** and **delay** 
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -238,7 +238,7 @@ _Note: In this case, the addTransition could have gone at the end of the method 
 
 Now let's finish this visual by adding adding a legend and a header.
 
-```
+```javascript
 let barChart = new VerticalBarChart("#bar-chart")
   .createChart({
     data: data,
@@ -279,12 +279,12 @@ Doing so is pretty easy without having to reselect the root svg element or resel
 
 Let's continue with the previous example by adding a click event to the bars. Let's say on click, we want them to change to orange. 
 
-```
+```javascript
 ...
 
   barChart.parts.bars
   .on('click',(event)=>{
-    event.target.fill = "orange
+    event.target.setAttribute("fill","orange")
   })
 ```
 
