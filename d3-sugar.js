@@ -1,7 +1,4 @@
-
-  let d3 = require('d3')
-
-
+// let d3 = require('d3')
 
 class Core {
   constructor(selector) {
@@ -26,6 +23,7 @@ class Core {
     this.margin = 50;
     this.padding = "";
     this.wrapperWidth = 0;
+    this.domainPadding = 0;
   }
   //getters
   get root() {
@@ -82,6 +80,16 @@ class Core {
     return Math.min(...this.domain);
   }
 
+  // setters allowing users to set min and max manually
+
+  set setMax(val) {
+    this.max = val;
+  }
+
+  set setMin(val){
+    this.min = val
+  }
+
   //function for creating line in line charts
   get lineFunc() {
     return d3
@@ -128,14 +136,22 @@ class Core {
     return d3
       .scaleLinear()
       .range([0, this.width])
-      .domain(this.min > 0 || this.min < 0 ? [this.min - 5, this.max + 5] : [this.min, this.max + 5]);
+      .domain(
+        this.min > 0 || this.min < 0
+          ? [this.min - this.domainPadding, this.max + this.domainPadding]
+          : [this.min - this.domainPadding, this.max + this.domainPadding]
+      );
   }
 
   get scaleLinearVertical() {
     return d3
       .scaleLinear()
       .range([this.height, 0])
-      .domain(this.min > 0 || this.min < 0 ? [this.min - 5, this.max + 5] : [this.min, this.max + 5]);
+      .domain(
+        this.min > 0 || this.min < 0
+          ? [this.min - this.domainPadding, this.max + this.domainPadding]
+          : [this.min - this.domainPadding, this.max + this.domainPadding]
+      );
   }
 
   //methods
@@ -152,7 +168,6 @@ class Core {
       });
     return this;
   }
-
 
   //adds legend. Renders legend based on objects in the legend array
   addLegend({ legendLabel } = {}) {
@@ -228,8 +243,8 @@ class Core {
   }
 
   // adds a method converting spaces in a string to dashes
-  dashify(str){
-    return str.replace(/\s+/g, '-').toLowerCase();
+  dashify(str) {
+    return str.replace(/\s+/g, "-").toLowerCase();
   }
 }
 
@@ -858,7 +873,10 @@ class PieChart extends Core {
       this.flatten;
       this.parts.svg = this.root
         .append("svg")
-        .attr("viewBox", `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`)
+        .attr(
+          "viewBox",
+          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+        )
         .append("g")
         .attr("class", "pie-chart")
         .attr(
@@ -1009,7 +1027,10 @@ class LineChart extends Core {
 
       this.parts.svg = this.root.append("svg");
       this.parts.svg
-      .attr("viewBox", `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`)
+        .attr(
+          "viewBox",
+          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+        )
         .append("g");
       return this;
     }
@@ -1102,7 +1123,7 @@ class LineChart extends Core {
     obj.color = color;
     obj.indicator = this.indicator;
     // core method removing spaces from stat keys
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     this.legend.push(obj);
     this.parts[`line_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
@@ -1147,7 +1168,7 @@ class LineChart extends Core {
     fontSize = null,
     show = false,
   } = {}) {
-   const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     if (this.width !== 0 || this.height !== 0) {
       this.parts[`labels_${uniqueName}`] = d3
         .select(this.selector + " svg")
@@ -1226,7 +1247,7 @@ class LineChart extends Core {
   }
 
   addPlotPoints({ color = "black", r = 5 } = {}) {
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     if (this.width !== 0 || this.height !== 0) {
       this.parts[`points_${uniqueName}`] = d3
         .select(`${this.selector} svg`)
@@ -1279,8 +1300,12 @@ class CombinationChart extends Core {
     this.height = height;
     if (width && height) {
       this.flatten;
-      this.parts.svg = this.root.append("svg")
-      .attr("viewBox", `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`)
+      this.parts.svg = this.root
+        .append("svg")
+        .attr(
+          "viewBox",
+          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+        );
       return this;
     }
   }
@@ -1301,7 +1326,7 @@ class CombinationChart extends Core {
     obj.color = color;
     obj.indicator = this.stat;
     this.legend.push(obj);
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     this.parts[`bars_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
       .append("g")
@@ -1389,7 +1414,7 @@ class CombinationChart extends Core {
     obj.color = color;
     obj.indicator = this.stat;
 
-  const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     this.legend.push(obj);
 
     this.parts[`line_${uniqueName}`] = d3
@@ -1454,7 +1479,7 @@ class CombinationChart extends Core {
       obj.indicator = this.stat;
       this.legend.push(obj);
     }
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
 
     this.parts[`points_${uniqueName}`] = this.parts.svg
       .append("g")
@@ -1468,7 +1493,7 @@ class CombinationChart extends Core {
         "cx",
         (d) =>
           this.scaleBandHorizontal(d[`${this.indicator}`]) * spreadX +
-          this.scaleBandHorizontal.bandwidth()/2
+          this.scaleBandHorizontal.bandwidth() / 2
       )
       .attr("r", r)
       .attr(
@@ -1530,7 +1555,7 @@ class CombinationChart extends Core {
     this.padding = padding;
     !width ? (width = this.width) : (this.width = width);
 
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
 
     this.parts[`guides_${uniqueName}`] = d3
       .select(`${this.selector} svg`)
@@ -1595,13 +1620,13 @@ class CombinationChart extends Core {
     hideLine = false,
     axisLabels,
   } = {}) {
-    const uniqueName = this.dashify(this.indicator)
+    const uniqueName = this.dashify(this.indicator);
     if (this.width !== 0 || this.height !== 0) {
       this.xAxisIterator++;
-      this.parts[`xAxis_${uniqueName}`] = d3
+      this.parts[`xAxis`] = d3
         .select(this.selector + "  svg")
         .append("g")
-        .attr("class", `x-axis-${uniqueName}`)
+        .attr("class", `x-axis`)
         .attr(
           "transform",
           `translate(${this.margin},${this.height + this.margin / 2})`
@@ -1636,7 +1661,7 @@ class CombinationChart extends Core {
     axisLabel,
     orient = "left",
   } = {}) {
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     if (this.width !== 0 || this.height !== 0) {
       this.domain = [];
       this.flatten;
@@ -1719,7 +1744,7 @@ class CombinationChart extends Core {
     fontSize = null,
     show = false,
   } = {}) {
-    const uniqueName = this.dashify(this.stat)
+    const uniqueName = this.dashify(this.stat);
     if (this.width !== 0 || this.height !== 0) {
       !indicator ? (indicator = this.indicator) : (this.indicator = indicator);
       this.parts[`labels_${uniqueName}`] = this.parts.svg
@@ -1799,20 +1824,19 @@ class CombinationChart extends Core {
   }
 }
 
-exports
-module.exports.Core = Core;
-module.exports.VerticalBarChart = VerticalBarChart;
-module.exports.HorizontalBarChart = HorizontalBarChart;
-module.exports.PieChart = PieChart;
-module.exports.LineChart = LineChart;
-module.exports.CombinationChart = CombinationChart;
+// exports
+// module.exports.Core = Core;
+// module.exports.VerticalBarChart = VerticalBarChart;
+// module.exports.HorizontalBarChart = HorizontalBarChart;
+// module.exports.PieChart = PieChart;
+// module.exports.LineChart = LineChart;
+// module.exports.CombinationChart = CombinationChart;
 
-// export {
-//   Core,
-//   VerticalBarChart,
-//   HorizontalBarChart,
-//   PieChart,
-//   LineChart,
-//   CombinationChart
-// }
-
+export {
+  Core,
+  VerticalBarChart,
+  HorizontalBarChart,
+  PieChart,
+  LineChart,
+  CombinationChart,
+};

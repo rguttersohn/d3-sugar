@@ -1,6 +1,6 @@
 {
   "name": "d3-sugar",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "D3 helper designed to quickly make basic data visuals.",
   "main": "d3-sugar.min.js",
   "scripts": {
