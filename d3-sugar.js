@@ -1,4 +1,4 @@
-let d3 = require('d3')
+// let d3 = require('d3')
 
 class Core {
   constructor(selector) {
@@ -13,7 +13,7 @@ class Core {
     // holds elements for rendering legend using addLegend method
     this.legend = [];
     // holds the domain in valid dataset.
-    this.domain = [];
+    this.domain = [0];
     // holds the html attributes that will be transitioned
     this.transitionAttr = [];
 
@@ -26,6 +26,18 @@ class Core {
     // adds padding to min and max
     this.domainPadding = 0;
   }
+
+
+  // setters
+  set domainSplice (val){
+  this.domain.includes(val) ? this.domain.splice(this.domain.findIndex(val => val === 0),1) : this.domain
+  }
+
+  set domainPush(val){
+    this.domain.push(val)
+  }
+
+
   //getters
   get root() {
     return d3.select(this.selector);
@@ -79,16 +91,6 @@ class Core {
   //finds min of all numbers in the domain array
   get min() {
     return Math.min(...this.domain);
-  }
-
-  // setters allowing users to set min and max manually
-
-  set setMax(val) {
-    this.max = val;
-  }
-
-  set setMin(val){
-    this.min = val
   }
 
   //function for creating line in line charts
@@ -1825,19 +1827,19 @@ class CombinationChart extends Core {
   }
 }
 
-// exports
-module.exports.Core = Core;
-module.exports.VerticalBarChart = VerticalBarChart;
-module.exports.HorizontalBarChart = HorizontalBarChart;
-module.exports.PieChart = PieChart;
-module.exports.LineChart = LineChart;
-module.exports.CombinationChart = CombinationChart;
+// // exports
+// module.exports.Core = Core;
+// module.exports.VerticalBarChart = VerticalBarChart;
+// module.exports.HorizontalBarChart = HorizontalBarChart;
+// module.exports.PieChart = PieChart;
+// module.exports.LineChart = LineChart;
+// module.exports.CombinationChart = CombinationChart;
 
-// export {
-//   Core,
-//   VerticalBarChart,
-//   HorizontalBarChart,
-//   PieChart,
-//   LineChart,
-//   CombinationChart,
-// };
+export {
+  Core,
+  VerticalBarChart,
+  HorizontalBarChart,
+  PieChart,
+  LineChart,
+  CombinationChart,
+};
