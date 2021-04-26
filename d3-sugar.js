@@ -20,7 +20,12 @@ class Core {
     // visual dimensions
     this.height = 0;
     this.width = 0;
-    this.margin = 50;
+    this.margin = {
+      left: 50, 
+      right: 50, 
+      top: 50, 
+      bottom: 50,
+    }
     this.padding = "";
     this.wrapperWidth = 0;
     // adds padding to min and max
@@ -254,12 +259,6 @@ class Core {
 class VerticalBarChart extends Core {
   constructor(selector) {
     super(selector);
-    this.margin = {
-      left:50,
-      right:50,
-      bottom:50,
-      top:50
-    };
   }
 
   //methods
@@ -549,12 +548,6 @@ class HorizontalBarChart extends Core {
   constructor(selector) {
     super(selector);
     // overwriting extended margin value
-    this.margin = {
-      left:50,
-      right:50,
-      bottom:50,
-      top:50
-    };
   }
 
   //methods
@@ -850,12 +843,6 @@ class HorizontalBarChart extends Core {
 class PieChart extends Core {
   constructor(selector, colors) {
     super(selector, colors);
-    this.margin = {
-      left:50,
-      right:50,
-      bottom:50,
-      top:50
-    };
   }
 
   //local getters
@@ -1033,13 +1020,6 @@ class PieChart extends Core {
 class LineChart extends Core {
   constructor(selector) {
     super(selector);
-
-    this.margin = {
-      left:50,
-      right:50,
-      bottom:50,
-      top:50
-    };
   }
 
   //methods
@@ -1307,13 +1287,6 @@ class CombinationChart extends Core {
   constructor(selector) {
     super(selector);
     this.transitionAttr = [];
-
-    this.margin = {
-      left:50,
-      right:50,
-      bottom:50,
-      top:50
-    };
   }
 
   //getters
@@ -1860,7 +1833,7 @@ class CombinationChart extends Core {
   }
 }
 
-// exports
+exports
 module.exports.Core = Core;
 module.exports.VerticalBarChart = VerticalBarChart;
 module.exports.HorizontalBarChart = HorizontalBarChart;
