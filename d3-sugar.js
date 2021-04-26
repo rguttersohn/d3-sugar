@@ -1,4 +1,4 @@
-let d3 = require('d3')
+// let d3 = require('d3')
 
 class Core {
   constructor(selector) {
@@ -254,6 +254,12 @@ class Core {
 class VerticalBarChart extends Core {
   constructor(selector) {
     super(selector);
+    this.margin = {
+      left:50,
+      right:50,
+      bottom:50,
+      top:50
+    };
   }
 
   //methods
@@ -274,7 +280,7 @@ class VerticalBarChart extends Core {
       this.parts.svg = this.root.append("svg");
       this.parts.svg.attr(
         "viewBox",
-        `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+        `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top}`
       );
       return this;
     }
@@ -291,7 +297,7 @@ class VerticalBarChart extends Core {
       .append("rect")
       .attr("x", (d) => this.scaleBandHorizontal(d[`${this.indicator}`]))
       .attr("width", this.scaleBandHorizontal.bandwidth())
-      .attr("transform", `translate(${this.margin},${this.margin / 2})`)
+      .attr("transform", `translate(${this.margin.left},${this.margin.top / 2})`)
       .style("opacity", opacity)
       .attr("y", (d) => {
         if (this.min >= 0) {
@@ -328,10 +334,10 @@ class VerticalBarChart extends Core {
         .append("g")
         .attr("class", "dividing-line")
         .append("line")
-        .attr("x1", this.margin)
-        .attr("x2", this.margin + this.width)
-        .attr("y1", this.scaleLinearVertical(0) + this.margin / 2)
-        .attr("y2", this.scaleLinearVertical(0) + this.margin / 2)
+        .attr("x1", this.margin.left)
+        .attr("x2", this.margin.left + this.width)
+        .attr("y1", this.scaleLinearVertical(0) + this.margin.top / 2)
+        .attr("y2", this.scaleLinearVertical(0) + this.margin.top / 2)
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
@@ -379,7 +385,7 @@ class VerticalBarChart extends Core {
         .attr("class", "x-axis")
         .attr(
           "transform",
-          `translate(${this.margin},${this.height + this.margin / 2})`
+          `translate(${this.margin.left},${this.height + this.margin.top / 2})`
         )
         .call(
           d3
@@ -415,7 +421,7 @@ class VerticalBarChart extends Core {
         .select(this.selector + " svg")
         .append("g")
         .attr("class", "y-axis")
-        .attr("transform", `translate(${this.margin},${this.margin / 2})`)
+        .attr("transform", `translate(${this.margin.left},${this.margin.top / 2})`)
         .call(
           d3
             .axisLeft(this.scaleLinearVertical)
@@ -510,7 +516,7 @@ class VerticalBarChart extends Core {
         )
         .attr("dx", dx)
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${this.margin},0)`)
+        .attr("transform", `translate(${this.margin.left},0)`)
         .attr("fill", color)
         .style("font-family", "sans-serif")
         .style("font-weight", fontWeight)
@@ -542,6 +548,13 @@ class VerticalBarChart extends Core {
 class HorizontalBarChart extends Core {
   constructor(selector) {
     super(selector);
+    // overwriting extended margin value
+    this.margin = {
+      left:50,
+      right:50,
+      bottom:50,
+      top:50
+    };
   }
 
   //methods
@@ -563,7 +576,7 @@ class HorizontalBarChart extends Core {
         .append("svg")
         .attr(
           "viewBox",
-          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+          `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top}`
         )
         .append("g")
         .attr("class", "bars");
@@ -583,17 +596,17 @@ class HorizontalBarChart extends Core {
       .enter()
       .append("rect")
       .attr("y", (d) => this.scaleBandVertical(d[`${this.indicator}`]))
-      .attr("transform", `translate(0,${this.margin / 2})`)
+      .attr("transform", `translate(0,${this.margin.top / 2})`)
       .style("opacity", opacity)
       .attr("height", (d) => this.scaleBandVertical.bandwidth())
       .attr("x", (d) => {
         if (this.min >= 0) {
-          return this.margin;
+          return this.margin.left;
         } else {
           if (d[`${this.stat}`] >= 0) {
-            return this.scaleLinearHorizontal(0) + this.margin;
+            return this.scaleLinearHorizontal(0) + this.margin.left;
           } else {
-            return this.margin + this.scaleLinearHorizontal(d[`${this.stat}`]);
+            return this.margin.left + this.scaleLinearHorizontal(d[`${this.stat}`]);
           }
         }
       })
@@ -622,10 +635,10 @@ class HorizontalBarChart extends Core {
         .append("g")
         .attr("class", "dividing-line")
         .append("line")
-        .attr("y1", 0)
-        .attr("y2", this.height + this.margin / 2)
-        .attr("x1", this.scaleLinearHorizontal(0) + this.margin)
-        .attr("x2", this.scaleLinearHorizontal(0) + this.margin)
+        .attr("y1", this.margin.top / 2)
+        .attr("y2", this.height + this.margin.top / 2)
+        .attr("x1", this.scaleLinearHorizontal(0) + this.margin.left)
+        .attr("x2", this.scaleLinearHorizontal(0) + this.margin.left)
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
@@ -653,7 +666,7 @@ class HorizontalBarChart extends Core {
       );
       this.transitionAttr[i].attr_2 = "x";
       this.transitionAttr[i].startAttr_2 =
-        this.scaleLinearHorizontal(0) + this.margin;
+        this.scaleLinearHorizontal(0) + this.margin.left;
       this.transitionAttr[i].endAttr_2 = parseFloat(
         this.parts.bars._groups[0][i].getAttribute("x")
       );
@@ -674,7 +687,7 @@ class HorizontalBarChart extends Core {
         .select(this.selector + " svg")
         .append("g")
         .attr("class", "y-axis")
-        .attr("transform", `translate(${this.margin},${this.margin / 2})`)
+        .attr("transform", `translate(${this.margin.left},${this.margin.top / 2})`)
         .call(
           d3
             .axisLeft(this.scaleBandVertical)
@@ -712,7 +725,7 @@ class HorizontalBarChart extends Core {
         .attr("class", "x-axis")
         .attr(
           "transform",
-          `translate(${this.margin},${this.height + this.margin / 2})`
+          `translate(${this.margin.left},${this.height + this.margin.top / 2})`
         )
         .call(
           d3
@@ -806,7 +819,7 @@ class HorizontalBarChart extends Core {
         )
         .attr("dy", dy)
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${this.margin},${this.margin / 2})`)
+        .attr("transform", `translate(${this.margin.left},${this.margin.top / 2})`)
         .attr("fill", color)
         .style("font-family", "sans-serif")
         .style("font-weight", fontWeight)
@@ -837,6 +850,12 @@ class HorizontalBarChart extends Core {
 class PieChart extends Core {
   constructor(selector, colors) {
     super(selector, colors);
+    this.margin = {
+      left:50,
+      right:50,
+      bottom:50,
+      top:50
+    };
   }
 
   //local getters
@@ -878,14 +897,14 @@ class PieChart extends Core {
         .append("svg")
         .attr(
           "viewBox",
-          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+          `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top}`
         )
         .append("g")
         .attr("class", "pie-chart")
         .attr(
           "transform",
-          `translate(${this.width / 2 + this.margin},${
-            this.height / 2 + this.margin
+          `translate(${this.width / 2 + this.margin.left},${
+            this.height / 2 + this.margin.top
           })`
         );
       return this;
@@ -939,8 +958,8 @@ class PieChart extends Core {
       .attr("class", "pie-chart-labels")
       .attr(
         "transform",
-        `translate(${this.width / 2 + this.margin},${
-          this.height / 2 + this.margin
+        `translate(${this.width / 2 + this.margin.left},${
+          this.height / 2 + this.margin.top
         })`
       )
       .selectAll("text")
@@ -1014,6 +1033,13 @@ class PieChart extends Core {
 class LineChart extends Core {
   constructor(selector) {
     super(selector);
+
+    this.margin = {
+      left:50,
+      right:50,
+      bottom:50,
+      top:50
+    };
   }
 
   //methods
@@ -1032,7 +1058,7 @@ class LineChart extends Core {
       this.parts.svg
         .attr(
           "viewBox",
-          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+          `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top}`
         )
         .append("g");
       return this;
@@ -1052,7 +1078,7 @@ class LineChart extends Core {
       .attr("class", "x-axis")
       .attr(
         "transform",
-        `translate(${this.margin},${this.height + this.margin/2})`
+        `translate(${this.margin.left},${this.height + this.margin.top/2})`
       )
       .call(
         d3
@@ -1086,7 +1112,7 @@ class LineChart extends Core {
       .select(`${this.selector} svg`)
       .append("g")
       .attr("class", "y-axis")
-      .attr("transform", `translate(${this.margin},${this.margin/2})`)
+      .attr("transform", `translate(${this.margin.left},${this.margin.top/2})`)
       .call(
         d3
           .axisLeft(this.scaleLinearVertical)
@@ -1134,7 +1160,7 @@ class LineChart extends Core {
       .attr("class", `line-${uniqueName}`)
       .append("path")
       .attr("d", this.lineFunc(this.data))
-      .attr("transform", `translate(${this.margin},${this.margin/2})`)
+      .attr("transform", `translate(${this.margin.left},${this.margin.top/2})`)
       .attr("stroke", color)
       .attr("stroke-width", 2)
       .attr("fill", "none");
@@ -1270,7 +1296,7 @@ class LineChart extends Core {
           return this.scaleLinearVertical(d[this.stat]);
         })
         .attr("r", r)
-        .attr("transform", `translate(${this.margin},${this.margin/2})`)
+        .attr("transform", `translate(${this.margin.left},${this.margin.right/2})`)
         .attr("fill", color);
       return this;
     }
@@ -1281,6 +1307,13 @@ class CombinationChart extends Core {
   constructor(selector) {
     super(selector);
     this.transitionAttr = [];
+
+    this.margin = {
+      left:50,
+      right:50,
+      bottom:50,
+      top:50
+    };
   }
 
   //getters
@@ -1307,7 +1340,7 @@ class CombinationChart extends Core {
         .append("svg")
         .attr(
           "viewBox",
-          `0 0 ${this.width + this.margin * 2} ${this.height + this.margin}`
+          `0 0 ${this.width + this.margin.left + this.margin.left} ${this.height + this.margin.top}`
         );
       return this;
     }
@@ -1346,7 +1379,7 @@ class CombinationChart extends Core {
       .attr("width", this.scaleBandHorizontal.bandwidth())
       .attr(
         "transform",
-        `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
+        `translate(${this.margin.left + translateX},${this.margin.top / 2 + translateY})`
       )
       .style("opacity", opacity)
       .attr("fill", (d, i) => color)
@@ -1378,10 +1411,10 @@ class CombinationChart extends Core {
         .append("g")
         .attr("class", "dividing-line")
         .append("line")
-        .attr("x1", this.margin)
-        .attr("x2", this.margin + this.wrapperWidth)
-        .attr("y1", this.scaleLinearVertical(0) + this.margin / 2)
-        .attr("y2", this.scaleLinearVertical(0) + this.margin / 2)
+        .attr("x1", this.margin.left)
+        .attr("x2", this.margin.left + this.wrapperWidth)
+        .attr("y1", this.scaleLinearVertical(0) + this.margin.top / 2)
+        .attr("y2", this.scaleLinearVertical(0) + this.margin.top / 2)
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
@@ -1390,7 +1423,7 @@ class CombinationChart extends Core {
     this.transitionAttr = [];
     for (
       let i = 0;
-      i < this.parts[`bars_${unqiueName}`]._groups[0].length;
+      i < this.parts[`bars_${uniqueName}`]._groups[0].length;
       i++
     ) {
       let obj = new Object();
@@ -1404,7 +1437,7 @@ class CombinationChart extends Core {
       this.transitionAttr[i].attr_2 = "y";
       this.transitionAttr[i].startAttr_2 = this.scaleLinearVertical(0);
       this.transitionAttr[i].endAttr_2 = parseFloat(
-        this.parts[`bars_${unqiueName}`]._groups[0][i].getAttribute("y")
+        this.parts[`bars_${uniqueName}`]._groups[0][i].getAttribute("y")
       );
     }
 
@@ -1427,7 +1460,7 @@ class CombinationChart extends Core {
       .attr("width", this.width)
       .append("path")
       .attr("d", this.lineFunc(this.data))
-      .attr("transform", `translate(${this.margin},${this.margin/2})`)
+      .attr("transform", `translate(${this.margin.left},${this.margin.top/2})`)
       .attr("stroke", (d, i) => {
         if (typeof color === "string") {
           return color;
@@ -1437,7 +1470,7 @@ class CombinationChart extends Core {
       .attr("fill", "none")
       .attr(
         "transform",
-        `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
+        `translate(${this.margin.left + translateX},${this.margin.top / 2 + translateY})`
       );
 
     //add to transitionattributes array
@@ -1501,7 +1534,7 @@ class CombinationChart extends Core {
       .attr("r", r)
       .attr(
         "transform",
-        `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
+        `translate(${this.margin.left + translateX},${this.margin.top / 2 + translateY})`
       )
       .style("opacity", opacity)
       .attr("fill", (d, i) => {
@@ -1518,10 +1551,10 @@ class CombinationChart extends Core {
         .append("g")
         .attr("class", "dividing-line")
         .append("line")
-        .attr("x1", this.margin)
-        .attr("x2", this.margin + this.wrapperWidth)
-        .attr("y1", this.scaleLinearVertical(0) + this.margin / 2)
-        .attr("y2", this.scaleLinearVertical(0) + this.margin / 2)
+        .attr("x1", this.margin.left)
+        .attr("x2", this.margin.left + this.wrapperWidth)
+        .attr("y1", this.scaleLinearVertical(0) + this.margin.top / 2)
+        .attr("y2", this.scaleLinearVertical(0) + this.margin.top / 2)
         .style("stroke", "lightgray")
         .style("stroke-width", "1px");
     }
@@ -1585,7 +1618,7 @@ class CombinationChart extends Core {
       .attr("stroke-dasharray", 3)
       .attr(
         "transform",
-        `translate(${this.margin + translateX},${this.margin / 2 + translateY})`
+        `translate(${this.margin.left + translateX},${this.margin.top / 2 + translateY})`
       )
       .attr("y1", (d) => this.scaleLinearVertical(d[`${this.stat}`]))
       .attr("y2", () => {
@@ -1632,7 +1665,7 @@ class CombinationChart extends Core {
         .attr("class", `x-axis`)
         .attr(
           "transform",
-          `translate(${this.margin},${this.height + this.margin / 2})`
+          `translate(${this.margin.left},${this.height + this.margin.top / 2})`
         )
         .call(
           d3
@@ -1672,7 +1705,7 @@ class CombinationChart extends Core {
         this.parts[`yAxis`] = this.parts.svg
           .append("g")
           .attr("class", `y-axis`)
-          .attr("transform", `translate(${this.margin},${this.margin / 2})`)
+          .attr("transform", `translate(${this.margin.left},${this.margin.top / 2})`)
           .call(
             d3
               .axisLeft(this.scaleLinearVertical)
@@ -1698,7 +1731,7 @@ class CombinationChart extends Core {
           .attr("class", `y-axis`)
           .attr(
             "transform",
-            `translate(${this.margin + this.wrapperWidth},${this.margin / 2})`
+            `translate(${this.margin.left + this.wrapperWidth},${this.margin.top / 2})`
           )
           .call(
             d3
@@ -1797,7 +1830,7 @@ class CombinationChart extends Core {
         )
         .attr("dx", dx)
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${this.margin},0)`)
+        .attr("transform", `translate(${this.margin.left},0)`)
         .attr("fill", color)
         .style("font-family", "sans-serif")
         .style("font-weight", fontWeight)
@@ -1827,19 +1860,19 @@ class CombinationChart extends Core {
   }
 }
 
-// exports
-module.exports.Core = Core;
-module.exports.VerticalBarChart = VerticalBarChart;
-module.exports.HorizontalBarChart = HorizontalBarChart;
-module.exports.PieChart = PieChart;
-module.exports.LineChart = LineChart;
-module.exports.CombinationChart = CombinationChart;
+// // exports
+// module.exports.Core = Core;
+// module.exports.VerticalBarChart = VerticalBarChart;
+// module.exports.HorizontalBarChart = HorizontalBarChart;
+// module.exports.PieChart = PieChart;
+// module.exports.LineChart = LineChart;
+// module.exports.CombinationChart = CombinationChart;
 
-// export {
-//   Core,
-//   VerticalBarChart,
-//   HorizontalBarChart,
-//   PieChart,
-//   LineChart,
-//   CombinationChart,
-// };
+export {
+  Core,
+  VerticalBarChart,
+  HorizontalBarChart,
+  PieChart,
+  LineChart,
+  CombinationChart,
+};
